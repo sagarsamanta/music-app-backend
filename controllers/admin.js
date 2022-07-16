@@ -24,7 +24,10 @@ exports.getPendingAllAlbum = async (req, res) => {
 };
 exports.getSuccessAllAlbum = async (req, res) => {
   try {
-    const allAlbum = await Album.find({ status: "SUCCESS" });
+    const allAlbum = await Album.find({ status: "SUCCESS" }).populate(
+      "user_id",
+      "-_id userName"
+    );
     if (allAlbum.length <= 0) {
       res.status(201).send({ message: "No Album found", album: allAlbum });
     } else {
@@ -36,7 +39,10 @@ exports.getSuccessAllAlbum = async (req, res) => {
 };
 exports.getCancelAllAlbum = async (req, res) => {
   try {
-    const allAlbum = await Album.find({ status: "CANCLE" });
+    const allAlbum = await Album.find({ status: "CANCLE" }).populate(
+      "user_id",
+      "-_id userName"
+    );
     if (allAlbum.length <= 0) {
       res.status(201).send({ message: "No Album found", album: allAlbum });
     } else {
