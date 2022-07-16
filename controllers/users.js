@@ -29,25 +29,38 @@ exports.register = async (req, res) => {
     } else {
       role = "ADMIN";
     }
-    let user = new User({
-      userName,
-      email,
-      client_type,
-      label_name,
-      royalties_name,
-      designation,
-      full_address,
-      country,
-      phone_number,
-      ops_email,
-      password,
-      role,
-    });
-    const registerUser = await user.save();
-    if (user) {
-      res
-        .status(200)
-        .json({ message: "SUCCESSFULLY REGISTERED", user: registerUser });
+
+    const isMobileRegister = await User.find({ phone_number });
+    const isUsedUserName = await User.find({ userName });
+
+    const isEmailRegister = await User.find({ email });
+    if (isUsedUserName.length > 0) {
+      res.status(201).json({ message: "User Name Alredy Taken" });
+    } else if (isEmailRegister.length > 0) {
+      res.status(201).json({ message: "Email Alredy Registered" });
+    } else if (isMobileRegister.length > 0) {
+      res.status(201).json({ message: "Mobile No Alredy Registered" });
+    } else {
+      let user = new User({
+        userName,
+        email,
+        client_type,
+        label_name,
+        royalties_name,
+        designation,
+        full_address,
+        country,
+        phone_number,
+        ops_email,
+        password,
+        role,
+      });
+      const registerUser = await user.save();
+      if (user) {
+        res
+          .status(200)
+          .json({ message: "SUCCESSFULLY REGISTERED", user: registerUser });
+      }
     }
   } catch (error) {
     console.log(error);
