@@ -9,6 +9,42 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  email: {
+    type: String,
+    trim: true,
+  },
+  client_type: {
+    type: String,
+    trim: true,
+  },
+  label_name: {
+    type: String,
+    trim: true,
+  },
+  royalties_name: {
+    type: String,
+    trim: true,
+  },
+  designation: {
+    type: String,
+    trim: true,
+  },
+  full_address: {
+    type: String,
+    trim: true,
+  },
+  country: {
+    type: String,
+    trim: true,
+  },
+  phone_number: {
+    type: String,
+    trim: true,
+  },
+  ops_email: {
+    type: String,
+    trim: true,
+  },
   password: {
     type: String,
     required: true,

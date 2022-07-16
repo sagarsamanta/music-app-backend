@@ -10,7 +10,20 @@ const Song = require("../models/Song");
 //registration for user or admin
 exports.register = async (req, res) => {
   try {
-    let { userName, password, role } = req.body;
+    let {
+      userName,
+      email,
+      client_type,
+      label_name,
+      royalties_name,
+      designation,
+      full_address,
+      country,
+      phone_number,
+      ops_email,
+      password,
+      role,
+    } = req.body;
     if (role) {
       role = "USER";
     } else {
@@ -18,6 +31,15 @@ exports.register = async (req, res) => {
     }
     let user = new User({
       userName,
+      email,
+      client_type,
+      label_name,
+      royalties_name,
+      designation,
+      full_address,
+      country,
+      phone_number,
+      ops_email,
       password,
       role,
     });

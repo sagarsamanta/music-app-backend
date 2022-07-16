@@ -9,7 +9,10 @@ const Song = require("../models/Song");
 
 exports.getPendingAllAlbum = async (req, res) => {
   try {
-    const allAlbum = await Album.find({ status: "PENDING" });
+    const allAlbum = await Album.find({ status: "PENDING" }).populate(
+      "user_id",
+      "-_id userName"
+    );
     if (allAlbum.length <= 0) {
       res.status(201).send({ message: "No Album found", album: allAlbum });
     } else {
