@@ -14,19 +14,18 @@ router.post("/createAlbum", authentication, album_art_upload, user.createAlbum);
 //add any document with authentication
 router.post("/addDoc", album_doc_upload, user.addAlbumDocument);
 //download any files with authentication
-router.post("/download", user.download);
 //get song details
-router.post("/getSongDetais", user.getSongDetais);
+router.get("/getSongDetais/:albumId", user.getSongDetais);
 //get all album name with song
 router.get("/getAllAlbumWithSong", authentication, user.getAllAlbumWithSong);
 //delete any files with authentication
-router.delete("/remove", authentication, user.removeFile);
 
 //admin controller
-
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);
 router.get("/getSuccessAllAlbum", admin.getSuccessAllAlbum);
 router.get("/getCancelAllAlbum", admin.getCancelAllAlbum);
-
 router.post("/updateAlbumStatus", admin.updateAlbumStatus);
+router.post("/getAllSongs", admin.getAllSongs);
+router.post("/download", admin.download);
+router.post("/removeFile", admin.removeFile);
 module.exports = router;

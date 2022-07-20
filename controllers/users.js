@@ -238,37 +238,6 @@ exports.addAlbumDocument = async (req, res) => {
   }
 };
 
-//document download handelar
-exports.download = (req, res, next) => {
-  const { doc_path } = req.body;
-  try {
-    const path =
-      "public/Sagar Samanta - Jr Javascript.pdf_0aebbc7b5f547ee845c4db7a92edd14d6a80c6231656320384959.pdf";
-    const file = fs.createReadStream(path);
-    const filename = new Date().toISOString();
-    res.setHeader(
-      "Content-Disposition",
-      'attachment: filename="' + filename + '"'
-    );
-    file.pipe(res);
-  } catch (error) {
-    res.status(500).send({ message: error });
-  }
-};
-
-//delete any document handelar
-exports.removeFile = async (req, res) => {
-  const { doc_path } = req.body;
-
-  try {
-    await unlinkAsync("public/upload_1655234249741.mp3");
-    res.status(200).send({ message: "Sucessfull" });
-  } catch (err) {
-    console.log(err);
-    res.status(500).send({ message: "Failed to remove" });
-  }
-};
-
 //get all album with song
 exports.getAllAlbumWithSong = async (req, res) => {
   try {
@@ -282,15 +251,14 @@ exports.getAllAlbumWithSong = async (req, res) => {
 };
 exports.getSongDetais = async (req, res) => {
   try {
-    const { albumId } = req.body;
+    const albumId = req.params.albumId;
     console.log(albumId);
     const song = await Album.findById(albumId);
     if (song) {
       const album_art_id = song.album_art_id;
-      console.log(album_art_id);
       const album_art = await Upload.findById(album_art_id);
-      // res.set("Content-Type", album_art[0].contentType);
-      res.status(200).json({ data: album_art });
+      res.set("Content-Type", "image/jpeg");
+      res.status(200).send(album_art);
     } else {
       res.status(201).json({ message: "Image not found" });
     }
