@@ -72,7 +72,7 @@ exports.updateAlbumStatus = async (req, res) => {
 exports.getAllSongs = async (req, res) => {
   try {
     const { albumId } = req.body;
-    const allSong = await Song.find({ albumId });
+    const allSong = await Song.find({ albumId }).populate("albumId");
     if (allSong.length == 0) {
       res.status(201).send({ message: "No image found", data: allSong });
     } else {
