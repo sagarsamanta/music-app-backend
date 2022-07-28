@@ -83,12 +83,20 @@ exports.getAllSongs = async (req, res) => {
   }
 };
 
-exports.download = (req, res, next) => {
-  const { doc_path } = req.body;
+exports.download = async (req, res, next) => {
+  const { doc_path, album_art_id } = req.body;
+  let file;
   try {
-    const path =
-      "public/2.png_278cadb5c5a600fd354bbb4a32acf34407bf98f01658143193507.png";
-    const file = fs.createReadStream(doc_path);
+    if (doc_path) {
+      file = fs.createReadStream(doc_path);
+    } else if (album_art_id) {
+      const path = await Upload.find({ _id: album_art_id });
+      var buffer = Buffer.from(new Uint8Array(path[0].avatar));
+      console.log(buffer);
+      file = fs.createReadStream(buffer);
+      // console.log(path[0].avatar)
+      // return res.send({ data1: path });
+    }
     const filename = new Date().toISOString();
     file.on("error", function (err) {
       console.log("error1 " + err.message);
@@ -122,5 +130,19 @@ exports.removeFile = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: "Failed to remove" });
+  }
+};
+exports.updateSongInfo = async (req, res) => {
+  try {
+    const id = req.body.songId;
+    if (!id) {
+      return res.status(201).send({ message: "Invalid song Id" });
+    }
+    const updatedSong = await Song.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    res.status(200).send({ data: updatedSong });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
   }
 };
