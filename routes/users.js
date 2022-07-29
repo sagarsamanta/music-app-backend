@@ -29,4 +29,5 @@ router.post("/getAllSongs", admin.getAllSongs);
 router.post("/download", admin.download);
 router.post("/removeFile", admin.removeFile);
 router.post("/updateSongInfo", admin.updateSongInfo);
+router.post("/updateAlbumDetails", admin.updateAlbumDetails);
 module.exports = router;

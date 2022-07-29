@@ -146,3 +146,17 @@ exports.updateSongInfo = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+exports.updateAlbumDetails = async (req, res) => {
+  try {
+    const id = req.body.albumId;
+    if (!id) {
+      return res.status(201).send({ message: "Invalid Album Id" });
+    }
+    const updatedAlbum = await Album.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    res.status(200).send({ data: updatedAlbum });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
