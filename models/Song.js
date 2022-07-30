@@ -66,15 +66,27 @@ const songSchema = mongoose.Schema({
     trim: true,
     required: true,
   },
-  wav_file: {
+  wav_file_url: {
     type: String,
     trim: true,
   },
-  noc_doc: {
+  wav_file_name: {
     type: String,
     trim: true,
   },
-  upload_mp3: {
+  noc_doc_url: {
+    type: String,
+    trim: true,
+  },
+  noc_doc_name: {
+    type: String,
+    trim: true,
+  },
+  upload_mp3_url: {
+    type: String,
+    trim: true,
+  },
+  upload_mp3_name: {
     type: String,
     trim: true,
   },

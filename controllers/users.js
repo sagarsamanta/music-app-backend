@@ -6,6 +6,7 @@ const unlinkAsync = promisify(fs.unlink);
 const Upload = require("../models/Upload");
 const Album = require("../models/Album");
 const Song = require("../models/Song");
+const { s3Upload } = require("../middleware/AwsS3service");
 
 //registration for user or admin
 exports.register = async (req, res) => {
@@ -100,30 +101,17 @@ exports.createAlbum = async (req, res) => {
   let banner_image_details = "";
   try {
     if (typeof req.files?.album_art !== "undefined") {
-      const {
-        filename,
-        originalname,
-        mimetype,
-        destination,
-        path: bannerPath,
-      } = req.files?.album_art[0];
-      //get buffter data of reqested banner
-      const bufferDataForBanner = fs.readFileSync(
-        path.join(__dirname + "/../public/" + req.files?.album_art[0].filename)
-      );
+      const { Location, Key, Bucket } = await s3Upload(req.files.album_art[0]);
+      const { originalname, mimetype } = req.files?.album_art[0];
 
       //store album image to database
       const banner = new Upload({
-        avatar: bufferDataForBanner,
         originalName: originalname,
         contentType: mimetype,
-        hashFileName: filename,
-        bannerPath: bannerPath,
+        hashFileName: Key,
+        url: Location,
       });
       banner_image_details = await banner.save();
-
-      //remove image stored in public directory
-      await unlinkAsync(bannerPath);
 
       //create new album
       const newAlbum = new Album({
@@ -154,6 +142,7 @@ exports.createAlbum = async (req, res) => {
 };
 // document add handelar
 exports.addAlbumDocument = async (req, res) => {
+  // const { Location, Key, Bucket }
   const {
     song_title,
     song_type,
@@ -177,22 +166,13 @@ exports.addAlbumDocument = async (req, res) => {
   let upload_mp3 = "";
   try {
     if (typeof req.files?.wav_file !== "undefined") {
-      wav_file =
-        req.files?.wav_file[0].destination +
-        "/" +
-        req.files?.wav_file[0].filename;
+      wav_file = await s3Upload(req.files.wav_file[0]);
     }
     if (typeof req.files?.noc_doc !== "undefined") {
-      noc_doc =
-        req.files?.noc_doc[0].destination +
-        "/" +
-        req.files?.noc_doc[0].filename;
+      noc_doc = await s3Upload(req.files.noc_doc[0]);
     }
     if (typeof req.files?.upload_mp3 !== "undefined") {
-      upload_mp3 =
-        req.files?.upload_mp3[0].destination +
-        "/" +
-        req.files?.upload_mp3[0].filename;
+      upload_mp3 = await s3Upload(req.files.upload_mp3[0]);
     }
     const newSong = new Song({
       song_title,
@@ -210,9 +190,13 @@ exports.addAlbumDocument = async (req, res) => {
       lyricist,
       crbt_start,
       crbt_name,
-      wav_file,
-      noc_doc,
-      upload_mp3,
+      wav_file_url: wav_file.Location,
+      wav_file_name: wav_file.Key,
+      noc_doc_url: wav_file.Location,
+      noc_doc_name: noc_doc.Key,
+      upload_mp3_url: upload_mp3.Location,
+      upload_mp3_name: upload_mp3.Key,
+
       albumId,
     });
 
@@ -252,12 +236,11 @@ exports.getAllAlbumWithSong = async (req, res) => {
 exports.getSongDetais = async (req, res) => {
   try {
     const albumId = req.params.albumId;
-    console.log(albumId);
     const song = await Album.findById(albumId);
     if (song) {
       const album_art_id = song.album_art_id;
       const album_art = await Upload.findById(album_art_id);
-      res.set("Content-Type", "image/jpeg");
+      // res.set("Content-Type", "image/jpeg");
       res.status(200).send(album_art);
     } else {
       res.status(201).json({ message: "Image not found" });

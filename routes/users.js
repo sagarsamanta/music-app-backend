@@ -12,7 +12,7 @@ router.post("/register", user.register);
 //create new album
 router.post("/createAlbum", authentication, album_art_upload, user.createAlbum);
 //add any document with authentication
-router.post("/addDoc", album_doc_upload, user.addAlbumDocument);
+router.post("/addDoc", authentication, album_doc_upload, user.addAlbumDocument);
 //download any files with authentication
 //get song details
 router.get("/getSongDetais/:albumId", user.getSongDetais);
@@ -26,7 +26,6 @@ router.get("/getSuccessAllAlbum", admin.getSuccessAllAlbum);
 router.get("/getCancelAllAlbum", admin.getCancelAllAlbum);
 router.post("/updateAlbumStatus", admin.updateAlbumStatus);
 router.post("/getAllSongs", admin.getAllSongs);
-router.post("/download", admin.download);
 router.post("/removeFile", admin.removeFile);
 router.post("/updateSongInfo", admin.updateSongInfo);
 router.post("/updateAlbumDetails", admin.updateAlbumDetails);

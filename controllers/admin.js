@@ -6,6 +6,7 @@ const unlinkAsync = promisify(fs.unlink);
 const Upload = require("../models/Upload");
 const Album = require("../models/Album");
 const Song = require("../models/Song");
+const { s3Remove } = require("../middleware/AwsS3service");
 
 exports.getPendingAllAlbum = async (req, res) => {
   try {
@@ -59,11 +60,11 @@ exports.updateAlbumStatus = async (req, res) => {
     if (album.length == 0) {
       res.status(201).send({ message: "No Album found" });
     } else {
-      album.status = status?.toUpperCase();
+      album[0].status = status?.toUpperCase();
       const updatedAlbum = await album[0].save();
       res
         .status(200)
-        .send({ album: updatedAlbum._id, message: "sucessfully updated" });
+        .send({ album: updatedAlbum, message: "sucessfully updated" });
     }
   } catch (error) {
     res.status(500).send({ message: error.message });
@@ -83,50 +84,33 @@ exports.getAllSongs = async (req, res) => {
   }
 };
 
-exports.download = async (req, res, next) => {
-  const { doc_path, album_art_id } = req.body;
-  let file;
-  try {
-    if (doc_path) {
-      file = fs.createReadStream(doc_path);
-    } else if (album_art_id) {
-      const path = await Upload.find({ _id: album_art_id });
-      var buffer = Buffer.from(new Uint8Array(path[0].avatar));
-      console.log(buffer);
-      file = fs.createReadStream(buffer);
-      // console.log(path[0].avatar)
-      // return res.send({ data1: path });
-    }
-    const filename = new Date().toISOString();
-    file.on("error", function (err) {
-      console.log("error1 " + err.message);
-      // filestream.close();
-      res.status(404).send({ message: "File Path Not found" }); // this error is in abc.txt???
-    });
-
-    file.on("finish", function () {
-      console.log("finish");
-    });
-    res.setHeader(
-      "Content-Disposition",
-      'attachment: filename="' + filename + '"'
-    );
-    file.pipe(res);
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
-};
-
 exports.removeFile = async (req, res) => {
-  const { doc_path } = req.body;
+  const { doc_path, songId, fieldName } = req.body;
+  const Key = doc_path;
   try {
-    await unlinkAsync(doc_path, (error) => {
-      if (error) {
-        res.status(404).send({ message: "File path not found" });
-      } else {
-        res.status(200).send({ message: "Sucessfull" });
+    const isDeleted = await s3Remove(Key);
+    if (isDeleted) {
+      if (fieldName === "wav_file") {
+        await Song.findByIdAndUpdate({ _id: songId }, { wav_file_url: "" });
+        return res.status(200).send({
+          message: "Wave file removed",
+        });
+      } else if (fieldName === "doc_file") {
+        await Song.findByIdAndUpdate({ _id: songId }, { noc_doc_url: "" });
+        return res.status(200).send({
+          message: "Doc file remove",
+        });
+      } else if (fieldName === "mp3_file") {
+        await Song.findByIdAndUpdate({ _id: songId }, { upload_mp3_url: "" });
+        return res.status(200).send({
+          message: "Mp3 file remove",
+        });
       }
-    });
+    } else {
+      return res.status(400).send({
+        message: "Failed to remove",
+      });
+    }
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: "Failed to remove" });

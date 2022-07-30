@@ -3,9 +3,7 @@ const imageUploadSchema = mongoose.Schema({
   originalName: {
     type: String,
   },
-  avatar: {
-    type: Buffer,
-  },
+
   contentType: {
     type: String,
   },
@@ -13,7 +11,7 @@ const imageUploadSchema = mongoose.Schema({
   hashFileName: {
     type: String,
   },
-  bannerPath: {
+  url: {
     type: String,
   },
 });

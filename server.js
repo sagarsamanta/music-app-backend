@@ -4,6 +4,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const path = require("path");
+const multer = require("multer");
 require("dotenv").config();
 app.use(express.static(__dirname + "/public"));
 app.use(express.json({ extended: false }));
@@ -28,6 +29,22 @@ mongoose
   });
 
 app.use("/api/user", require("./routes/users"));
+
+//error handelar
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError) {
+    if (error.code === "LIMIT_UNEXPECTED_FILE") {
+      res.status(400).json({
+        message: "Unexpected file",
+      });
+    }
+    if (error.code === "LIMIT_FILE_COUNT") {
+      res.status(400).json({
+        message: "File limite exited",
+      });
+    }
+  }
+});
 
 // listen server response
 app.listen(port, () => {
