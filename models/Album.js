@@ -24,7 +24,7 @@ const albumSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
-  user_id: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+  user_id: { type: mongoose.Types.ObjectId, ref: "User" },
   status: {
     type: String,
     default: "PENDING",

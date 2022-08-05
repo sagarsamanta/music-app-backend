@@ -1,8 +1,8 @@
 const User = require("../models/Users");
 const fs = require("fs");
 const path = require("path");
+const Notification = require("../models/Notifications");
 const { promisify } = require("util");
-const unlinkAsync = promisify(fs.unlink);
 const Upload = require("../models/Upload");
 const Album = require("../models/Album");
 const Song = require("../models/Song");
@@ -244,6 +244,53 @@ exports.getSongDetais = async (req, res) => {
       res.status(200).send(album_art);
     } else {
       res.status(201).json({ message: "Image not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+exports.getNotifyForm = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const isValidNotification = await Notification.find({ _id: id });
+    if (isValidNotification.length === 0) {
+      return res.status(201).send({ message: "Invalid notification " });
+    } else {
+      const { message, songId, albumId } = isValidNotification[0];
+      if (songId) {
+        const song = await Song.find({ _id: songId });
+        res.status(200).send({
+          SongDetails: song[0],
+          form_type: "Song",
+          errorMessage: message,
+        });
+      } else if (albumId) {
+        const album = await Album.find({ _id: albumId }).populate(
+          "album_art_id",
+          "-_id url"
+        );
+        res.status(200).send({
+          albumDetails: album[0],
+          form_type: "Album",
+          errorMessage: message,
+        });
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+exports.getAllNotification = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const isValidUser = await User.find({ _id: userId });
+    if (isValidUser.length === 0) {
+      return res.status(201).send({ message: "Invalid User Id " });
+    } else {
+      const getAllNotification = await Notification.find({ userId });
+      res.status(200).send({
+        allNotification: getAllNotification,
+      });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
