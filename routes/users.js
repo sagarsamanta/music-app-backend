@@ -18,7 +18,12 @@ router.post("/addDoc", authentication, album_doc_upload, user.addAlbumDocument);
 router.get("/getSongDetais/:albumId", user.getSongDetais);
 //get all album name with song
 router.get("/getAllAlbumWithSong", authentication, user.getAllAlbumWithSong);
-//delete any files with authentication
+//get form details using notification id
+router.post("/getNotifyForm", user.getNotifyForm);
+//get individiual notification
+router.post("/getAllNotification", user.getAllNotification);
+
+
 
 //admin controller
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);
@@ -29,4 +34,7 @@ router.post("/getAllSongs", admin.getAllSongs);
 router.post("/removeFile", admin.removeFile);
 router.post("/updateSongInfo", admin.updateSongInfo);
 router.post("/updateAlbumDetails", admin.updateAlbumDetails);
+//count specific album
+router.get("/countAllAlbum", admin.countAllAlbum);
+router.post("/sendAlert", admin.sendAlert);
 module.exports = router;
