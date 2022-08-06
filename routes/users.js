@@ -12,7 +12,7 @@ router.post("/register", user.register);
 //create new album
 router.post("/createAlbum", authentication, album_art_upload, user.createAlbum);
 //add any document with authentication
-router.post("/addDoc", authentication, album_doc_upload, user.addAlbumDocument);
+router.post("/addDoc", album_doc_upload, user.addAlbumDocument);
 //download any files with authentication
 //get song details
 router.get("/getSongDetais/:albumId", user.getSongDetais);
@@ -22,8 +22,6 @@ router.get("/getAllAlbumWithSong", authentication, user.getAllAlbumWithSong);
 router.post("/getNotifyForm", user.getNotifyForm);
 //get individiual notification
 router.post("/getAllNotification", user.getAllNotification);
-
-
 
 //admin controller
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);
