@@ -32,4 +32,7 @@ router.post("/getAllSongs", admin.getAllSongs);
 router.post("/removeFile", admin.removeFile);
 router.post("/updateSongInfo", admin.updateSongInfo);
 router.post("/updateAlbumDetails", admin.updateAlbumDetails);
+router.post("/updateAlbumDetails", admin.updateAlbumDetails);
+router.post("/sendAlert", admin.sendAlert);
+router.get("/countAllAlbum", admin.countAllAlbum);
 module.exports = router;
