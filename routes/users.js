@@ -34,7 +34,4 @@ router.post("/getAllSongs", admin.getAllSongs);
 router.post("/removeFile", admin.removeFile);
 router.post("/updateSongInfo", admin.updateSongInfo);
 router.post("/updateAlbumDetails", admin.updateAlbumDetails);
-//count specific album
-router.get("/countAllAlbum", admin.countAllAlbum);
-router.post("/sendAlert", admin.sendAlert);
 module.exports = router;
