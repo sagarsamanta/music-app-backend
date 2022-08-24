@@ -8,6 +8,12 @@ const Album = require("../models/Album");
 const Song = require("../models/Song");
 const { s3Upload } = require("../middleware/AwsS3service");
 
+const updateNoticationStatus = async (id) => {
+  const updatedNotification = await Notification.findByIdAndUpdate(
+    { _id: id },
+    { status: "SEEN" }
+  );
+};
 //registration for user or admin
 exports.register = async (req, res) => {
   try {
@@ -280,6 +286,32 @@ exports.getNotifyForm = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+exports.getAlbumSongCurrectionNotification = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const isValidUser = await User.find({ _id: userId });
+    if (isValidUser.length === 0) {
+      return res.status(201).send({ message: "Invalid User Id " });
+    } else {
+      const getAllNotification = await Notification.find({
+        userId,
+        status: "UNSEEN",
+        type: "Editable",
+      });
+      const sorted = getAllNotification.sort((a, b) => {
+        const aDate = new Date(a.date + " " + a.time);
+        const bDate = new Date(b.date + " " + b.time);
+        console.log(aDate, bDate);
+        return bDate.getTime() - aDate.getTime();
+      });
+      res.status(200).send({
+        allNotification: sorted,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 exports.getAllNotification = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -287,12 +319,26 @@ exports.getAllNotification = async (req, res) => {
     if (isValidUser.length === 0) {
       return res.status(201).send({ message: "Invalid User Id " });
     } else {
-      const getAllNotification = await Notification.find({ userId });
+      const getAllNotification = await Notification.find({
+        userId,
+        status: "UNSEEN",
+      });
+      const sorted = getAllNotification.sort((a, b) => {
+        const aDate = new Date(a.date + " " + a.time);
+        const bDate = new Date(b.date + " " + b.time);
+        console.log(aDate, bDate);
+        return bDate.getTime() - aDate.getTime();
+      });
       res.status(200).send({
-        allNotification: getAllNotification,
+        allNotification: sorted,
       });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+exports.updateSingleNotificationStatus = async (req, res) => {
+  const { id } = req.body;
+  await updateNoticationStatus(id);
+  res.status(200).send({ message: "Notification status updated sucessfully" });
 };

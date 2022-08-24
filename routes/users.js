@@ -20,11 +20,22 @@ router.get("/getSongDetais/:albumId", user.getSongDetais);
 router.get("/getAllAlbumWithSong", authentication, user.getAllAlbumWithSong);
 //get form details using notification id
 router.post("/getNotifyForm", user.getNotifyForm);
-//get individiual notification
+//get any type of notification
 router.post("/getAllNotification", user.getAllNotification);
+//get only album or song currection notifications
+router.post(
+  "/getAlbumSongCurrectionNotification",
+  user.getAlbumSongCurrectionNotification
+);
+//update single notification status
+router.post(
+  "/updateSingleNotificationStatus",
+  user.updateSingleNotificationStatus
+);
 
 //admin controller
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);
+router.get("/getReleasedAllAlbum", admin.getReleasedAllAlbum);
 router.get("/getSuccessAllAlbum", admin.getSuccessAllAlbum);
 router.get("/getCancelAllAlbum", admin.getCancelAllAlbum);
 router.post("/updateAlbumStatus", admin.updateAlbumStatus);
@@ -32,7 +43,10 @@ router.post("/getAllSongs", admin.getAllSongs);
 router.post("/removeFile", admin.removeFile);
 router.post("/updateSongInfo", admin.updateSongInfo);
 router.post("/updateAlbumDetails", admin.updateAlbumDetails);
-router.post("/updateAlbumDetails", admin.updateAlbumDetails);
-router.post("/sendAlert", admin.sendAlert);
+//Album or song currection notification
+router.post(
+  "/sendAlbumOrSongCurrectionNotification",
+  admin.sendAlbumOrSongCurrectionNotification
+);
 router.get("/countAllAlbum", admin.countAllAlbum);
 module.exports = router;

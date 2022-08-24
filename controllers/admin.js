@@ -3,9 +3,38 @@ const Album = require("../models/Album");
 const Song = require("../models/Song");
 const { s3Remove } = require("../middleware/AwsS3service");
 
+//notification create handelar
+const createNotification = async (data) => {
+  const dateAndTime = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Kolkata",
+  });
+
+  const date = dateAndTime.split(",")[0];
+  const time = dateAndTime.split(",")[1];
+  data.date = date;
+  data.time = time;
+  const notification = new Notification(data);
+  const newNotification = await notification.save();
+  return newNotification;
+};
+
 exports.getPendingAllAlbum = async (req, res) => {
   try {
     const allAlbum = await Album.find({ status: "PENDING" })
+      .populate("user_id", "_id userName client_type")
+      .populate("all_song");
+    if (allAlbum.length <= 0) {
+      res.status(201).send({ message: "No Album found", album: allAlbum });
+    } else {
+      res.status(200).send({ album: allAlbum });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+exports.getReleasedAllAlbum = async (req, res) => {
+  try {
+    const allAlbum = await Album.find({ status: "RELEASED" })
       .populate("user_id", "_id userName client_type")
       .populate("all_song");
     if (allAlbum.length <= 0) {
@@ -49,7 +78,7 @@ exports.getCancelAllAlbum = async (req, res) => {
 };
 exports.updateAlbumStatus = async (req, res) => {
   try {
-    let { albumId, status } = req.body;
+    let { albumId, status, message } = req.body;
     if (!status) status = "PENDING";
     const album = await Album.find({ _id: albumId });
     if (album.length == 0) {
@@ -57,9 +86,15 @@ exports.updateAlbumStatus = async (req, res) => {
     } else {
       album[0].status = status?.toUpperCase();
       const updatedAlbum = await album[0].save();
-      res
-        .status(200)
-        .send({ album: updatedAlbum, message: "sucessfully updated" });
+      const albumTitle = updatedAlbum.title;
+      const userId = updatedAlbum.user_id;
+      //create notification
+      const data = { albumId, albumTitle, userId, message };
+      const notification = await createNotification(data);
+      res.status(200).send({
+        message: "Sucessfully Updated",
+        notification,
+      });
     }
   } catch (error) {
     res.status(500).send({ message: error.message });
@@ -96,7 +131,7 @@ exports.removeFile = async (req, res) => {
           message: "Doc file remove",
         });
       } else if (fieldName === "mp3_file") {
-        await Song.findByIdAndUpdate({ _id: songId }, { upload_mp3_url: "" });
+        await Song({ _id: songId }, { upload_mp3_url: "" });
         return res.status(200).send({
           message: "Mp3 file remove",
         });
@@ -144,16 +179,18 @@ exports.countAllAlbum = async (req, res) => {
     const pendingAlbum = await Album.find({ status: "PENDING" });
     const approvedAlbum = await Album.find({ status: "SUCCESS" });
     const canclealbum = await Album.find({ status: "CANCLE" });
+    const realesedAlbum = await Album.find({ status: "RELEASED" });
     res.status(200).send({
       pending: pendingAlbum.length,
       success: approvedAlbum.length,
       cancle: canclealbum.length,
+      released: realesedAlbum.length,
     });
   } catch (error) {
     res.status(500).send("Server error");
   }
 };
-exports.sendAlert = async (req, res) => {
+exports.sendAlbumOrSongCurrectionNotification = async (req, res) => {
   try {
     const { albumId, songId, message } = req.body;
     if (albumId) {
@@ -161,16 +198,15 @@ exports.sendAlert = async (req, res) => {
       if (album.length === 0) {
         return res.status(201).send("Album not found");
       } else {
-        const { user_id } = album[0];
-        const notification = new Notification({
-          albumId,
-          message,
-          userId: user_id,
-        });
-        const createNotification = await notification.save();
+        const userId = album[0].user_id;
+        const albumTitle = album[0].title;
+        const type = "Editable";
+
+        const data = { albumId, albumTitle, userId, message, type };
+        const notification = await createNotification(data);
         res.status(200).send({
           message: "Successful",
-          data: createNotification,
+          notification: notification,
         });
       }
     } else if (songId) {
@@ -178,21 +214,20 @@ exports.sendAlert = async (req, res) => {
       if (song.length === 0) {
         return res.status(201).send("Song not found");
       } else {
-        const { albumId } = song[0];
+        let { albumId } = song[0];
         const findAlbum = await Album.find({ _id: albumId });
         if (findAlbum.length === 0) {
           return res.status(201).send("Song not belongs to any album");
         } else {
-          const { user_id } = findAlbum[0];
-          const notification = new Notification({
-            songId,
-            message,
-            userId: user_id,
-          });
-          const createNotification = await notification.save();
+          const userId = findAlbum[0].user_id;
+          const albumTitle = findAlbum[0].title;
+          const type = "Editable";
+          const data = { songId, albumTitle, userId, message, type };
+          const notification = await createNotification(data);
+
           res.status(200).send({
             message: "Successful",
-            data: createNotification,
+            notification,
           });
         }
       }
@@ -200,4 +235,7 @@ exports.sendAlert = async (req, res) => {
   } catch (error) {
     res.status(500).send(error.message);
   }
+};
+exports.sendAnyNotification = async (req, res) => {
+  const { userId, message } = req.body;
 };
