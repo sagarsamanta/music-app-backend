@@ -50,7 +50,7 @@ exports.getSuccessAllAlbum = async (req, res) => {
   try {
     const allAlbum = await Album.find({ status: "SUCCESS" }).populate(
       "user_id",
-      "-_id userName"
+      "-_id userName client_type"
     );
     if (allAlbum.length <= 0) {
       res.status(201).send({ message: "No Album found", album: allAlbum });
@@ -65,7 +65,7 @@ exports.getCancelAllAlbum = async (req, res) => {
   try {
     const allAlbum = await Album.find({ status: "CANCLE" }).populate(
       "user_id",
-      "-_id userName"
+      "-_id userName client_type"
     );
     if (allAlbum.length <= 0) {
       res.status(201).send({ message: "No Album found", album: allAlbum });
