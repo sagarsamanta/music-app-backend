@@ -32,6 +32,12 @@ router.post(
   "/updateSingleNotificationStatus",
   user.updateSingleNotificationStatus
 );
+//update album
+router.post("/updateAlbumDetails", user.updateAlbumDetails);
+//update song
+router.post("/updateSongDetails", user.updateSongDetails);
+
+
 
 //admin controller
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);

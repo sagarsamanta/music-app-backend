@@ -8,11 +8,14 @@ const Album = require("../models/Album");
 const Song = require("../models/Song");
 const { s3Upload } = require("../middleware/AwsS3service");
 
-const updateNoticationStatus = async (id) => {
+const updateNoticationStatus = async (id, status, verified) => {
   const updatedNotification = await Notification.findByIdAndUpdate(
     { _id: id },
-    { status: "SEEN" }
+    { status, verified }
   );
+};
+const removeNotification = async (id) => {
+  const updatedNotification = await Notification.findByIdAndDelete({ _id: id });
 };
 //registration for user or admin
 exports.register = async (req, res) => {
@@ -295,7 +298,7 @@ exports.getAlbumSongCurrectionNotification = async (req, res) => {
     } else {
       const getAllNotification = await Notification.find({
         userId,
-        status: "UNSEEN",
+        verified: "NO",
         type: "Editable",
       });
       const sorted = getAllNotification.sort((a, b) => {
@@ -339,6 +342,97 @@ exports.getAllNotification = async (req, res) => {
 };
 exports.updateSingleNotificationStatus = async (req, res) => {
   const { id } = req.body;
-  await updateNoticationStatus(id);
+  await updateNoticationStatus(id, "UNSEEN", "YES");
   res.status(200).send({ message: "Notification status updated sucessfully" });
+};
+exports.updateAlbumDetails = async (req, res) => {
+  try {
+    const {
+      albumId,
+      title,
+      release_date,
+      live_date,
+      film_banner,
+      film_producer,
+      content_type,
+      notificationId,
+    } = req.body;
+    await Album.findByIdAndUpdate(
+      { _id: albumId },
+      {
+        title,
+        release_date,
+        live_date,
+        film_banner,
+        film_producer,
+        content_type,
+        status: "PENDING",
+      }
+    );
+    await updateNoticationStatus(notificationId, "UNSEEN", "YES");
+    res.status(200).send({
+      message: "Album Updated Sucessfull",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "Server error",
+    });
+  }
+};
+exports.updateSongDetails = async (req, res) => {
+  try {
+    const {
+      songId,
+      song_title,
+      song_type,
+      song_desc,
+      language,
+      gener,
+      sub_gener,
+      mood,
+      singer,
+      composer,
+      director,
+      star_cast,
+      explicit,
+      lyricist,
+      crbt_start,
+      crbt_name,
+      notificationId,
+    } = req.body;
+    let song = await Song.find({ _id: songId });
+    const albumId = song[0].albumId;
+    console.log(albumId);
+    await Song.findByIdAndUpdate(
+      { _id: songId },
+      {
+        song_title,
+        song_type,
+        song_desc,
+        language,
+        gener,
+        sub_gener,
+        mood,
+        singer,
+        composer,
+        director,
+        star_cast,
+        explicit,
+        lyricist,
+        crbt_start,
+        crbt_name,
+      }
+    );
+    await Album.findByIdAndUpdate({ _id: albumId }, { status: "PENDING" });
+    await updateNoticationStatus(notificationId, "YES");
+    res.status(200).send({
+      message: "Song UpdatedSucessfull",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "Server error",
+    });
+  }
 };

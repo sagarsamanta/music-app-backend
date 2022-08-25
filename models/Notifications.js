@@ -38,6 +38,11 @@ const notificationSchema = mongoose.Schema({
     trim: true,
     default: "readOnly",
   },
+  verified: {
+    type: String,
+    trim: true,
+    default: "NO",
+  },
 });
 const Notification = mongoose.model("Notification", notificationSchema);
 module.exports = Notification;

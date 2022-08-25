@@ -204,6 +204,10 @@ exports.sendAlbumOrSongCurrectionNotification = async (req, res) => {
 
         const data = { albumId, albumTitle, userId, message, type };
         const notification = await createNotification(data);
+        await Album.findByIdAndUpdate(
+          { _id: albumId },
+          { status: "UNDER VERIFICATION" }
+        );
         res.status(200).send({
           message: "Successful",
           notification: notification,
@@ -224,7 +228,10 @@ exports.sendAlbumOrSongCurrectionNotification = async (req, res) => {
           const type = "Editable";
           const data = { songId, albumTitle, userId, message, type };
           const notification = await createNotification(data);
-
+          await Album.findByIdAndUpdate(
+            { _id: albumId },
+            { status: "UNDER VERIFICATION" }
+          );
           res.status(200).send({
             message: "Successful",
             notification,
