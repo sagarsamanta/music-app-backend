@@ -36,14 +36,14 @@ router.post(
 router.post("/updateAlbumDetails", user.updateAlbumDetails);
 //update song
 router.post("/updateSongDetails", user.updateSongDetails);
-
-
+router.post("/updateBulkNotificationStatus", user.updateBulkNotificationStatus);
 
 //admin controller
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);
 router.get("/getReleasedAllAlbum", admin.getReleasedAllAlbum);
 router.get("/getSuccessAllAlbum", admin.getSuccessAllAlbum);
 router.get("/getCancelAllAlbum", admin.getCancelAllAlbum);
+router.get("/getUnderVerificationAllAlbum", admin.getUnderVerificationAllAlbum);
 router.post("/updateAlbumStatus", admin.updateAlbumStatus);
 router.post("/getAllSongs", admin.getAllSongs);
 router.post("/removeFile", admin.removeFile);
@@ -55,4 +55,6 @@ router.post(
   admin.sendAlbumOrSongCurrectionNotification
 );
 router.get("/countAllAlbum", admin.countAllAlbum);
+//Modify album details
+router.post("/updateAlbumInfo", album_art_upload, admin.updateAlbumInfo);
 module.exports = router;

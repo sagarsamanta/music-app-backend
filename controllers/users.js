@@ -425,7 +425,7 @@ exports.updateSongDetails = async (req, res) => {
       }
     );
     await Album.findByIdAndUpdate({ _id: albumId }, { status: "PENDING" });
-    await updateNoticationStatus(notificationId, "YES");
+    await updateNoticationStatus(notificationId, "UNSEEN", "YES");
     res.status(200).send({
       message: "Song UpdatedSucessfull",
     });
@@ -436,3 +436,19 @@ exports.updateSongDetails = async (req, res) => {
     });
   }
 };
+exports.updateBulkNotificationStatus = async (req, res) => {
+  const { data } = req.body;
+  try {
+    data.forEach(async (element) => {
+      await Notification.findByIdAndUpdate(
+        { _id: element._id },
+        { status: "SEEN" }
+      );
+    });
+    res.status(200).send({ message: "Success" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Error" });
+  }
+};
+

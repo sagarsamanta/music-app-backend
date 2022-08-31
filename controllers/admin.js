@@ -1,7 +1,8 @@
 const Notification = require("../models/Notifications");
 const Album = require("../models/Album");
 const Song = require("../models/Song");
-const { s3Remove } = require("../middleware/AwsS3service");
+const { s3Remove, s3Upload } = require("../middleware/AwsS3service");
+const Upload = require("../models/Upload");
 
 //notification create handelar
 const createNotification = async (data) => {
@@ -21,6 +22,20 @@ const createNotification = async (data) => {
 exports.getPendingAllAlbum = async (req, res) => {
   try {
     const allAlbum = await Album.find({ status: "PENDING" })
+      .populate("user_id", "_id userName client_type")
+      .populate("all_song");
+    if (allAlbum.length <= 0) {
+      res.status(201).send({ message: "No Album found", album: allAlbum });
+    } else {
+      res.status(200).send({ album: allAlbum });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+exports.getUnderVerificationAllAlbum = async (req, res) => {
+  try {
+    const allAlbum = await Album.find({ status: "UNDER VERIFICATION" })
       .populate("user_id", "_id userName client_type")
       .populate("all_song");
     if (allAlbum.length <= 0) {
@@ -180,11 +195,15 @@ exports.countAllAlbum = async (req, res) => {
     const approvedAlbum = await Album.find({ status: "SUCCESS" });
     const canclealbum = await Album.find({ status: "CANCLE" });
     const realesedAlbum = await Album.find({ status: "RELEASED" });
+    const underVerificationAlbum = await Album.find({
+      status: "UNDER VERIFICATION",
+    });
     res.status(200).send({
       pending: pendingAlbum.length,
       success: approvedAlbum.length,
       cancle: canclealbum.length,
       released: realesedAlbum.length,
+      underVerification: underVerificationAlbum.length,
     });
   } catch (error) {
     res.status(500).send("Server error");
@@ -245,4 +264,59 @@ exports.sendAlbumOrSongCurrectionNotification = async (req, res) => {
 };
 exports.sendAnyNotification = async (req, res) => {
   const { userId, message } = req.body;
+};
+exports.updateAlbumInfo = async (req, res) => {
+  const {
+    albumId,
+    label,
+    catalogNo,
+    upc,
+    trackDuration,
+    relInBangladesh,
+    othersInfo,
+  } = req.body;
+
+  let banner_image_details = "";
+  try {
+    if (typeof req.files?.album_art !== "undefined") {
+      const { Location, Key, Bucket } = await s3Upload(req.files.album_art[0]);
+      const { originalname, mimetype } = req.files?.album_art[0];
+
+      //store album image to database
+      const banner = new Upload({
+        originalName: originalname,
+        contentType: mimetype,
+        hashFileName: Key,
+        url: Location,
+      });
+      banner_image_details = await banner.save();
+      const album = await Album.findByIdAndUpdate(
+        { _id: albumId },
+        {
+          label,
+          catalogNo,
+          upc,
+          trackDuration,
+          relInBangladesh,
+          othersInfo,
+          album_art_id: banner_image_details?._id,
+        }
+      );
+      console.log(album);
+      const uploadedFile = await Upload.findByIdAndDelete({
+        _id: album.album_art_id,
+      });
+      const key = uploadedFile.hashFileName;
+      await s3Remove(Key);
+      res.status(200).send({
+        message: "SUCCESSFULL",
+      });
+    } else {
+      res.status(201).send({
+        message: "Album not found",
+      });
+    }
+  } catch (err) {
+    res.status(500).send({ message: "Server error", error: err.message });
+  }
 };

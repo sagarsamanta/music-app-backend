@@ -31,12 +31,31 @@ const albumSchema = mongoose.Schema({
   },
   all_song: [{ type: mongoose.Types.ObjectId, ref: "Song" }],
   album_art_id: { type: mongoose.Types.ObjectId, ref: "Upload" },
+  label: {
+    type: String,
+    trim: true,
+  },
+  catalogNo: {
+    type: String,
+    trim: true,
+  },
+  upc: {
+    type: String,
+    trim: true,
+  },
+  trackDuration: {
+    type: String,
+    trim: true,
+  },
+  relInBangladesh: {
+    type: Boolean,
+    trim: true,
+  },
+  othersInfo: {
+    type: String,
+    trim: true,
+  },
 });
-// albumSchema.virtual("song", {
-//   ref: "Song",
-//   localField: "_id",
-//   foreignField: "albumId",
-// });
 
 const Album = mongoose.model("Album", albumSchema);
 module.exports = Album;
