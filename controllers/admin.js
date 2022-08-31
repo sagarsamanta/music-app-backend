@@ -78,7 +78,7 @@ exports.getSuccessAllAlbum = async (req, res) => {
 };
 exports.getCancelAllAlbum = async (req, res) => {
   try {
-    const allAlbum = await Album.find({ status: "CANCLE" }).populate(
+    const allAlbum = await Album.find({ status: "CANCEL" }).populate(
       "user_id",
       "-_id userName client_type"
     );
@@ -193,7 +193,7 @@ exports.countAllAlbum = async (req, res) => {
   try {
     const pendingAlbum = await Album.find({ status: "PENDING" });
     const approvedAlbum = await Album.find({ status: "SUCCESS" });
-    const canclealbum = await Album.find({ status: "CANCLE" });
+    const canclealbum = await Album.find({ status: "CANCEL" });
     const realesedAlbum = await Album.find({ status: "RELEASED" });
     const underVerificationAlbum = await Album.find({
       status: "UNDER VERIFICATION",
