@@ -4,7 +4,12 @@ const user = require("../controllers/users");
 const admin = require("../controllers/admin");
 const { album_doc_upload, album_art_upload } = require("../middleware/Upload");
 const authentication = require("../middleware/authentication");
-const { addDocument, getRevenue } = require("../controllers/document");
+const {
+  addDocument,
+  getMonthStoreReport,
+  getRevanueReport,
+  getStreamingReport,
+} = require("../controllers/document");
 
 // login user
 router.post("/login", user.login);
@@ -64,6 +69,8 @@ router.post("/updateAlbumInfo", album_art_upload, admin.updateAlbumInfo);
 //doc
 
 router.post("/uploadDoc", addDocument);
-router.get("/getRevenue", getRevenue);
+router.get("/getMonthStoreReport", getMonthStoreReport);
+router.get("/getStreamingReport", getStreamingReport);
+router.get("/getRevanueReport", getRevanueReport);
 
 module.exports = router;

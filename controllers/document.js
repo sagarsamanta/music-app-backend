@@ -17,19 +17,20 @@ exports.addDocument = async (req, res, next) => {
     res.status(500).send(error);
   }
 };
-exports.getRevenue = async (req, res) => {
+
+exports.getMonthStoreReport = async (req, res) => {
   try {
-    const value = await Doc.aggregate([
+    const monthReport = await Doc.aggregate([
       {
         $match: {
-          userName: "kk",
+          userName: req.body.userName,
         },
       },
       {
         $group: {
           _id: {
             // year: "$year",
-            // month: "$month",
+            month: "$month",
             // storeName: "$storeName",
           },
           revanue: { $sum: "$revanue" },
@@ -37,7 +38,85 @@ exports.getRevenue = async (req, res) => {
         },
       },
     ]);
-    res.status(200).send(value);
+    const storeReport = await Doc.aggregate([
+      {
+        $match: {
+          userName: req.body.userName,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            // year: "$year",
+            // month: "$month",
+            storeName: "$storeName",
+          },
+          revanue: { $sum: "$revanue" },
+          streamming: { $sum: "$total" },
+        },
+      },
+    ]);
+    res.status(200).send({
+      storeReport: storeReport,
+      monthReport: monthReport,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+exports.getStreamingReport = async (req, res) => {
+  try {
+    const report = await Doc.aggregate([
+      {
+        $match: {
+          userName: req.body.userName,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: "$year",
+            month: "$month",
+            storeName: "$storeName",
+          },
+          //   revanue: { $sum: "$revanue" },
+          streamming: { $sum: "$total" },
+        },
+      },
+    ]);
+    res.status(200).send({
+      report,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+exports.getRevanueReport = async (req, res) => {
+  try {
+    const report = await Doc.aggregate([
+      {
+        $match: {
+          userName: req.body.userName,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: "$year",
+            month: "$month",
+            storeName: "$storeName",
+          },
+          revanue: { $sum: "$revanue" },
+          //   streamming: { $sum: "$total" },
+        },
+      },
+    ]);
+
+    res.status(200).send({
+      report,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
