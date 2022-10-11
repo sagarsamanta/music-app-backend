@@ -4,6 +4,7 @@ const user = require("../controllers/users");
 const admin = require("../controllers/admin");
 const { album_doc_upload, album_art_upload } = require("../middleware/Upload");
 const authentication = require("../middleware/authentication");
+const { addDocument, getRevenue } = require("../controllers/document");
 
 // login user
 router.post("/login", user.login);
@@ -36,6 +37,8 @@ router.post(
 router.post("/updateAlbumDetails", user.updateAlbumDetails);
 //update song
 router.post("/updateSongDetails", user.updateSongDetails);
+
+//clear all notification
 router.post("/updateBulkNotificationStatus", user.updateBulkNotificationStatus);
 
 //admin controller
@@ -57,4 +60,10 @@ router.post(
 router.get("/countAllAlbum", admin.countAllAlbum);
 //Modify album details
 router.post("/updateAlbumInfo", album_art_upload, admin.updateAlbumInfo);
+
+//doc
+
+router.post("/uploadDoc", addDocument);
+router.get("/getRevenue", getRevenue);
+
 module.exports = router;
