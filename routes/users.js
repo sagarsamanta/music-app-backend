@@ -9,6 +9,9 @@ const {
   getMonthStoreReport,
   getRevanueReport,
   getStreamingReport,
+  removeUploadedExcel,
+  getUserReports,
+  getAllUplodedRecords,
 } = require("../controllers/document");
 
 // login user
@@ -68,9 +71,15 @@ router.post("/updateAlbumInfo", album_art_upload, admin.updateAlbumInfo);
 
 //doc
 
-router.post("/uploadDoc", addDocument);
+router.post("/uploadDoc/:storeName/:year/:month", addDocument);
 router.get("/getMonthStoreReport", getMonthStoreReport);
 router.get("/getStreamingReport", getStreamingReport);
 router.get("/getRevanueReport", getRevanueReport);
+router.get("/getUserReports", getUserReports);
+router.get("/getAllUplodedRecords", getAllUplodedRecords);
+router.delete(
+  "/removeUploadedExcel/:storeName/:year/:month",
+  removeUploadedExcel
+);
 
 module.exports = router;

@@ -1,7 +1,9 @@
 const multer = require("multer");
-
+const crypto = require("crypto");
+const fileExtension = require("file-extension");
+const {v4 : uuidv4} = require('uuid')
 const songDetailsStorage = multer.memoryStorage();
-
+const newId = uuidv4()
 const album_doc_upload = multer({
   storage: songDetailsStorage,
   limits: {
@@ -34,24 +36,23 @@ const album_art_upload = multer({
   },
 }).fields([{ name: "album_art", maxCount: 1 }]);
 
+const monthlyExcelStore = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, "public");
+  },
+  filename: function (req, file, cb) {
+    const { originalname } = file;
+    cb(null, `${newId}-${originalname}`);
+  },
+});
+let monthlyStoreDocUpload = multer({ storage: monthlyExcelStore }).single(
+  "file"
+);
 module.exports = {
   album_doc_upload,
   album_art_upload,
+  monthlyStoreDocUpload,
 };
-
-// const album_art_storage = multer.diskStorage({
-//   destination: function (req, file, callback) {
-//     callback(null, "public");
-//   }, // Destination to store video
-//   filename: (req, file, cb) => {
-//     const crypt = sha1(file.originalname);
-//     // console.log("called1");
-
-//     const { originalname } = file;
-//     cb(null, `${uuid()}-${originalname}`);
-//   },
-// });
-
 // const album_doc_storage = multer.diskStorage({
 //   destination: function (req, file, callback) {
 //     callback(null, "public");

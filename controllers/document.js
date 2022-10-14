@@ -4,24 +4,36 @@ const fs = require("fs");
 const objectsToCsv = require("objects-to-csv");
 const excelToJson = require("convert-excel-to-json");
 const XLSX = require("xlsx");
+const Record = require("../models/Record");
 const getRecords = async (query) => {
-  const data = await Doc.find(query);
-  console.log(data);
+  const data = await Doc.find(query, { _id: 0, __v: 0 });
   return data;
 };
 const jsonToCsv = async (req, res, data, store, month, year) => {
+  const vdata = [
+    { name: 1, age: 9 },
+    { name: 9, age: 96 },
+    { name: 90, age: 89 },
+  ];
+  console.log(data);
   const workSheet = XLSX.utils.json_to_sheet(data);
-  const workbook = XLSX.utils.book_new;
+  const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, workSheet, "students");
   XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
   XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
   XLSX.writeFile(workbook, "studentData.xlsx");
+  res.download("studentData.xlsx");
 };
 
 exports.addDocument = async (req, res, next) => {
   try {
+    const { storeName, month, year } = req.params;
+    const isAlreadyUploed = await Record.findOne(req.params);
+    if (isAlreadyUploed)
+      return res.status(201).send({ message: "Record Alredy Exist!" });
+    const newRecord = new Record(req.params);
+    await newRecord.save();
     monthlyStoreDocUpload(req, res, function (err) {
-      const { storeName, month, year } = req.body;
       const result = excelToJson({
         sourceFile: `public/${req.file.filename}`,
         columnToKey: {
@@ -39,18 +51,18 @@ exports.addDocument = async (req, res, next) => {
 
         Doc.insertMany(updatedRecord, (err, data) => {
           if (err) {
-            console.log(err);
             return res.status(500).send("Failed to upload!");
           }
         });
         fs.unlinkSync(`public/${req.file.filename}`);
-        return res.status(200).json({ message: "Successfully uploaded!" });
+        return res
+          .status(200)
+          .json({ message: "Successfully uploaded!", data: newRecord });
       } else {
         return res.status(500).send(err);
       }
     });
   } catch (error) {
-    console.log(error);
     res.status(500).send(error);
   }
 };
@@ -163,7 +175,8 @@ exports.removeUploadedExcel = async (req, res) => {
   try {
     const { storeName, year, month } = req.params;
     const count = await Doc.deleteMany({ storeName, year, month });
-    res.status(200).send(count);
+    const record = await Record.deleteOne(req.params);
+    res.status(200).send({ count, record });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -185,6 +198,15 @@ exports.getUserReports = async (req, res) => {
       const data = await getRecords({ artist_name, year });
       return res.status(200).send(data);
     }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+exports.getAllUplodedRecords = async (req, res) => {
+  try {
+    const record = await Record.find().sort({ createdAt: "desc" });
+    res.status(200).send(record);
   } catch (error) {
     console.log(error);
     res.status(500).send(error);

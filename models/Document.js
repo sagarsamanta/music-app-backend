@@ -13,11 +13,27 @@ const documentSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-    userName: {
+    product: {
       type: String,
       trim: true,
     },
-    revanue: {
+    isrc: {
+      type: String,
+      trim: true,
+    },
+    song_name: {
+      type: String,
+      trim: true,
+    },
+    artist_name: {
+      type: String,
+      trim: true,
+    },
+    composer_name: {
+      type: String,
+      trim: true,
+    },
+    income: {
       type: Number,
       trim: true,
       default: 0,
