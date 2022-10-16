@@ -27,7 +27,8 @@ const jsonToCsv = async (req, res, data, store, month, year) => {
 
 exports.addDocument = async (req, res, next) => {
   try {
-    const { storeName, month, year } = req.params;
+    const { storeName, year, month } = req.params;
+    console.log(req.params);
     const isAlreadyUploed = await Record.findOne(req.params);
     if (isAlreadyUploed)
       return res.status(201).send({ message: "Record Alredy Exist!" });
@@ -46,7 +47,7 @@ exports.addDocument = async (req, res, next) => {
       if (result.Sheet1.length > 0) {
         const updatedRecord = result.Sheet1.map((record) => {
           //   const fiterArtistName=record.artist_name.split(",")[0]
-          return { storeName, month, year, ...record };
+          return { storeName, year, month, ...record };
         });
 
         Doc.insertMany(updatedRecord, (err, data) => {
@@ -67,59 +68,12 @@ exports.addDocument = async (req, res, next) => {
   }
 };
 
-exports.getMonthStoreReport = async (req, res) => {
-  try {
-    const monthReport = await Doc.aggregate([
-      {
-        $match: {
-          artist_name: req.body.artist_name,
-        },
-      },
-      {
-        $group: {
-          _id: {
-            // year: "$year",
-            month: "$month",
-            // storeName: "$storeName",
-          },
-          revanue: { $sum: "$income" },
-          streamming: { $sum: "$total" },
-        },
-      },
-    ]);
-    const storeReport = await Doc.aggregate([
-      {
-        $match: {
-          artist_name: req.body.artist_name,
-        },
-      },
-      {
-        $group: {
-          _id: {
-            // year: "$year",
-            // month: "$month",
-            storeName: "$storeName",
-          },
-          revanue: { $sum: "$income" },
-          streamming: { $sum: "$total" },
-        },
-      },
-    ]);
-    res.status(200).send({
-      storeReport: storeReport,
-      monthReport: monthReport,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
-  }
-};
-exports.getStreamingReport = async (req, res) => {
+exports.getStreaminMonthStoreReportForTable = async (req, res) => {
   try {
     const report = await Doc.aggregate([
       {
         $match: {
-          artist_name: req.body.artist_name,
+          artist_name: req.params.artist_name,
         },
       },
       {
@@ -129,36 +83,7 @@ exports.getStreamingReport = async (req, res) => {
             month: "$month",
             storeName: "$storeName",
           },
-          //   revanue: { $sum: "$revanue" },
           streamming: { $sum: "$total" },
-        },
-      },
-    ]);
-    res.status(200).send({
-      report,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
-  }
-};
-exports.getRevanueReport = async (req, res) => {
-  try {
-    const report = await Doc.aggregate([
-      {
-        $match: {
-          artist_name: req.body.artist_name,
-        },
-      },
-      {
-        $group: {
-          _id: {
-            year: "$year",
-            month: "$month",
-            storeName: "$storeName",
-          },
-          revanue: { $sum: "$income" },
-          //   streamming: { $sum: "$total" },
         },
       },
     ]);
@@ -171,6 +96,122 @@ exports.getRevanueReport = async (req, res) => {
     res.status(500).send(error);
   }
 };
+exports.getStreamingMonthStoreReportForCharts = async (req, res) => {
+  try {
+    const barChartMonthReport = await Doc.aggregate([
+      {
+        $match: {
+          artist_name: req.params.artist_name,
+          year: req.params.year,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            month: "$month",
+          },
+          streamming: { $sum: "$total" },
+        },
+      },
+    ]);
+    const pieChartStoreReport = await Doc.aggregate([
+      {
+        $match: {
+          artist_name: req.params.artist_name,
+          year: req.params.year,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            storeName: "$storeName",
+          },
+          streamming: { $sum: "$total" },
+        },
+      },
+    ]);
+    res.status(200).send({
+      barChartMonthReport,
+      pieChartStoreReport,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
+exports.getRevanueMonthStoreReportForTable = async (req, res) => {
+  try {
+    const report = await Doc.aggregate([
+      {
+        $match: {
+          artist_name: req.params.artist_name,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: "$year",
+            month: "$month",
+            storeName: "$storeName",
+          },
+          revanue: { $sum: "$income" },
+        },
+      },
+    ]);
+
+    res.status(200).send({
+      report,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+exports.getRevanueMonthStoreReportForCharts = async (req, res) => {
+  try {
+    const barChartMonthReport = await Doc.aggregate([
+      {
+        $match: {
+          artist_name: req.params.artist_name,
+          year: req.params.year,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            month: "$month",
+          },
+          revanue: { $sum: "$income" },
+        },
+      },
+    ]);
+    const pieChartStoreReport = await Doc.aggregate([
+      {
+        $match: {
+          artist_name: req.params.artist_name,
+          year: req.params.year,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            storeName: "$storeName",
+          },
+          revanue: { $sum: "$income" },
+        },
+      },
+    ]);
+    res.status(200).send({
+      barChartMonthReport,
+      pieChartStoreReport,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
 exports.removeUploadedExcel = async (req, res) => {
   try {
     const { storeName, year, month } = req.params;
@@ -183,11 +224,10 @@ exports.removeUploadedExcel = async (req, res) => {
 };
 exports.getUserReports = async (req, res) => {
   try {
-    const { artist_name, storeName, month, year } = req.body;
+    const { artist_name, storeName,year,month } = req.params;
     if (storeName && month && year) {
       const data = await getRecords({ artist_name, storeName, month, year });
-      await jsonToCsv(req, res, data, storeName, year, month);
-      //   return res.status(200).send(data);
+      res.status(200).send(data);
     } else if (storeName && year) {
       const data = await getRecords({ artist_name, storeName, year });
       return res.status(200).send(data);

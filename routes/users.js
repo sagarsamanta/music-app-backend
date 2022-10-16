@@ -6,13 +6,16 @@ const { album_doc_upload, album_art_upload } = require("../middleware/Upload");
 const authentication = require("../middleware/authentication");
 const {
   addDocument,
-  getMonthStoreReport,
-  getRevanueReport,
-  getStreamingReport,
+  getStreaminMonthStoreReportForTable,
+  getStreamingMonthStoreReportForCharts,
+  getRevanueMonthStoreReportForTable,
+  getRevanueMonthStoreReportForCharts,
   removeUploadedExcel,
   getUserReports,
   getAllUplodedRecords,
 } = require("../controllers/document");
+
+// user controllers
 
 // login user
 router.post("/login", user.login);
@@ -69,14 +72,45 @@ router.get("/countAllAlbum", admin.countAllAlbum);
 //Modify album details
 router.post("/updateAlbumInfo", album_art_upload, admin.updateAlbumInfo);
 
-//doc
+//doc controllers
 
+//API for admin to upload only excel(.xlsx) file
 router.post("/uploadDoc/:storeName/:year/:month", addDocument);
-router.get("/getMonthStoreReport", getMonthStoreReport);
-router.get("/getStreamingReport", getStreamingReport);
-router.get("/getRevanueReport", getRevanueReport);
-router.get("/getUserReports", getUserReports);
+
+//API for streaming table both store and month report (pass user or artist name pas a params)
+router.get(
+  "/getStreaminMonthStoreReportForTable/:artist_name",
+  getStreaminMonthStoreReportForTable
+);
+
+//APi for streaming both bar and pie chart
+router.get(
+  "/getStreamingMonthReportForCharts/:artist_name/:year",
+  getStreamingMonthStoreReportForCharts
+);
+
+//API for revanue table both store and month report (pass user or artist name pas a params)
+router.get(
+  "/getRevanueMonthStoreReportForTable/:artist_name",
+  getRevanueMonthStoreReportForTable
+);
+
+//APi for revanue both bar and pie chart
+router.get(
+  "/getRevanueMonthStoreReportForCharts/:artist_name/:year",
+  getRevanueMonthStoreReportForCharts
+);
+
+//API for donload user reports
+router.get(
+  "/getUserReports/:artist_name/:storeName/:year/:month",
+  getUserReports
+);
+
+//API for admin uploaded all record table
 router.get("/getAllUplodedRecords", getAllUplodedRecords);
+
+//API for delete any uploaded record
 router.delete(
   "/removeUploadedExcel/:storeName/:year/:month",
   removeUploadedExcel
