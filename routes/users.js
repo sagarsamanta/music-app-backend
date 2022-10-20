@@ -79,7 +79,7 @@ router.post("/uploadDoc/:storeName/:year/:month", addDocument);
 
 //API for streaming table both store and month report (pass user or artist name pas a params)
 router.get(
-  "/getStreaminMonthStoreReportForTable/:artist_name",
+  "/getStreaminMonthStoreReportForTable/:artist_name/:year",
   getStreaminMonthStoreReportForTable
 );
 
@@ -91,7 +91,7 @@ router.get(
 
 //API for revanue table both store and month report (pass user or artist name pas a params)
 router.get(
-  "/getRevanueMonthStoreReportForTable/:artist_name",
+  "/getRevanueMonthStoreReportForTable/:artist_name/:year",
   getRevanueMonthStoreReportForTable
 );
 

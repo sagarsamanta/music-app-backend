@@ -1,28 +1,12 @@
 const { monthlyStoreDocUpload } = require("../middleware/Upload");
 const Doc = require("../models/Document");
 const fs = require("fs");
-const objectsToCsv = require("objects-to-csv");
 const excelToJson = require("convert-excel-to-json");
-const XLSX = require("xlsx");
 const Record = require("../models/Record");
 const getRecords = async (query) => {
   const data = await Doc.find(query, { _id: 0, __v: 0 });
+  console.log(query);
   return data;
-};
-const jsonToCsv = async (req, res, data, store, month, year) => {
-  const vdata = [
-    { name: 1, age: 9 },
-    { name: 9, age: 96 },
-    { name: 90, age: 89 },
-  ];
-  console.log(data);
-  const workSheet = XLSX.utils.json_to_sheet(data);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, workSheet, "students");
-  XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
-  XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
-  XLSX.writeFile(workbook, "studentData.xlsx");
-  res.download("studentData.xlsx");
 };
 
 exports.addDocument = async (req, res, next) => {
@@ -74,6 +58,7 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
       {
         $match: {
           artist_name: req.params.artist_name,
+          year: req.params.year,
         },
       },
       {
@@ -86,10 +71,48 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
           streamming: { $sum: "$total" },
         },
       },
+      {
+        $group: {
+          _id: {
+            year: "$_id.year",
+            month: "$_id.month",
+          },
+          Data: {
+            $push: {
+              // Month: "$_id.month",
+              Store: "$_id.storeName",
+              streamming: "$streamming",
+            },
+          },
+        },
+      },
+      // {
+      //   $group: {
+      //     _id: "$_id.Month",
+      //     Data: {
+      //       $push: {
+      //         // Month: "$_id.month",
+      //         Store: "$_id.Store",
+      //         streamming: "$streamming",
+      //       },
+      //     },
+      //   },
+      // },
     ]);
 
+    const formatData = report.map((item) => {
+      value = {};
+      value.month = item._id.month;
+      item.Data.forEach((v) => {
+        let store = v.Store;
+        let strem = v.streamming;
+        Object.assign(value, { [store]: strem });
+      });
+      return value;
+    });
     res.status(200).send({
-      report,
+      year: req.params.year,
+      Streamming: formatData,
     });
   } catch (error) {
     console.log(error);
@@ -146,6 +169,7 @@ exports.getRevanueMonthStoreReportForTable = async (req, res) => {
       {
         $match: {
           artist_name: req.params.artist_name,
+          year: req.params.year,
         },
       },
       {
@@ -158,10 +182,35 @@ exports.getRevanueMonthStoreReportForTable = async (req, res) => {
           revanue: { $sum: "$income" },
         },
       },
+      {
+        $group: {
+          _id: {
+            year: "$_id.year",
+            month: "$_id.month",
+          },
+          Data: {
+            $push: {
+              // Month: "$_id.month",
+              Store: "$_id.storeName",
+              revanue: "$revanue",
+            },
+          },
+        },
+      },
     ]);
-
+    const formatData = report.map((item) => {
+      value = {};
+      value.month = item._id.month;
+      item.Data.forEach((v) => {
+        let store = v.Store;
+        let revanue = v.revanue;
+        Object.assign(value, { [store]: revanue });
+      });
+      return value;
+    });
     res.status(200).send({
-      report,
+      year: req.params.year,
+      Revanue: formatData,
     });
   } catch (error) {
     console.log(error);
@@ -224,7 +273,8 @@ exports.removeUploadedExcel = async (req, res) => {
 };
 exports.getUserReports = async (req, res) => {
   try {
-    const { artist_name, storeName,year,month } = req.params;
+    const { artist_name, storeName, year, month } = req.params;
+    console.log(req.params);
     if (storeName && month && year) {
       const data = await getRecords({ artist_name, storeName, month, year });
       res.status(200).send(data);
