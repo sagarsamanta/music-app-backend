@@ -302,3 +302,13 @@ exports.getAllUplodedRecords = async (req, res) => {
     res.status(500).send(error);
   }
 };
+exports.getYear = async (req, res) => {
+  const { artist_name } = req.params;
+  const data = await Doc.find({artist_name:artist_name}).distinct("year");
+  try {
+    res.status(200).send(data);
+  } catch (error) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+};

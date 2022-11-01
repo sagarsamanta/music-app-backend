@@ -13,6 +13,7 @@ const {
   removeUploadedExcel,
   getUserReports,
   getAllUplodedRecords,
+  getYear,
 } = require("../controllers/document");
 
 // user controllers
@@ -109,6 +110,7 @@ router.get(
 
 //API for admin uploaded all record table
 router.get("/getAllUplodedRecords", getAllUplodedRecords);
+router.get("/getYear/:artist_name", getYear);
 
 //API for delete any uploaded record
 router.delete(
