@@ -2,7 +2,11 @@ const express = require("express");
 const router = express.Router();
 const user = require("../controllers/users");
 const admin = require("../controllers/admin");
-const { album_doc_upload, album_art_upload } = require("../middleware/Upload");
+const {
+  album_doc_upload,
+  album_art_upload,
+  creaditNoteUpload,
+} = require("../middleware/Upload");
 const authentication = require("../middleware/authentication");
 const {
   addDocument,
@@ -52,6 +56,7 @@ router.post("/updateSongDetails", user.updateSongDetails);
 
 //clear all notification
 router.post("/updateBulkNotificationStatus", user.updateBulkNotificationStatus);
+router.get("/getCreaditNotes/:artist_name", user.getCreaditNotes);
 
 //admin controller
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);
@@ -64,6 +69,9 @@ router.post("/getAllSongs", admin.getAllSongs);
 router.post("/removeFile", admin.removeFile);
 router.post("/updateSongInfo", admin.updateSongInfo);
 router.post("/updateAlbumDetails", admin.updateAlbumDetails);
+router.post("/createCreaditNotes", creaditNoteUpload, admin.createCreaditNotes);
+router.get("/getAllArtistName", admin.getAllArtistName);
+
 //Album or song currection notification
 router.post(
   "/sendAlbumOrSongCurrectionNotification",

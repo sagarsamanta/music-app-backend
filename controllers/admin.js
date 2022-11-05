@@ -3,6 +3,8 @@ const Album = require("../models/Album");
 const Song = require("../models/Song");
 const { s3Remove, s3Upload } = require("../middleware/AwsS3service");
 const Upload = require("../models/Upload");
+const Creadit = require("../models/Creadit");
+const User = require("../models/Users");
 
 //notification create handelar
 const createNotification = async (data) => {
@@ -318,5 +320,54 @@ exports.updateAlbumInfo = async (req, res) => {
     }
   } catch (err) {
     res.status(500).send({ message: "Server error", error: err.message });
+  }
+};
+exports.createCreaditNotes = async (req, res) => {
+  const { artist_name, expireFrom, expireTo } = req.body;
+  let creaditNotesFile = "";
+  try {
+    if (typeof req.files?.file !== "undefined") {
+      const { Location, Key, Bucket } = await s3Upload(req.files.file[0]);
+      const { originalname, mimetype } = req.files?.file[0];
+
+      //store album image to database
+      const file = new Upload({
+        originalName: originalname,
+        contentType: mimetype,
+        hashFileName: Key,
+        url: Location,
+      });
+      creaditNotesFile = await file.save();
+
+      //create new album
+      const newCreaditNote = new Creadit({
+        artist_name,
+        fileInfo: file._id,
+        expireFrom,
+        expireTo,
+        url: Location,
+      });
+      const creaditNote = await newCreaditNote.save();
+      if (creaditNote) {
+        res.status(200).send({
+          message: "SUCCESSFULL",
+          creaditNote: creaditNote?._id,
+        });
+      }
+    } else {
+      res.status(201).send({
+        message: "Something went wrong!",
+      });
+    }
+  } catch (err) {
+    res.status(500).send({ message: "Server error", error: err.message });
+  }
+};
+exports.getAllArtistName = async (req, res) => {
+  try {
+    const allArtist = await User.find().distinct("userName");
+    res.status(200).send(allArtist);
+  } catch (error) {
+    res.status(500).send("Server error");
   }
 };

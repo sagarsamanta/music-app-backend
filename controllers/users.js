@@ -7,6 +7,7 @@ const Upload = require("../models/Upload");
 const Album = require("../models/Album");
 const Song = require("../models/Song");
 const { s3Upload } = require("../middleware/AwsS3service");
+const Creadit = require("../models/Creadit");
 
 const updateNoticationStatus = async (id, status, verified) => {
   const updatedNotification = await Notification.findByIdAndUpdate(
@@ -451,4 +452,14 @@ exports.updateBulkNotificationStatus = async (req, res) => {
     res.status(500).send({ message: "Error" });
   }
 };
-
+exports.getCreaditNotes = async (req, res) => {
+  try {
+    const { artist_name } = req.params;
+    const artistInfo = await Creadit.find({ artist_name }).select(
+      "artist_name expireFrom expireTo url createdAt -_id"
+    );
+    res.status(200).send({ creadit: artistInfo });
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+};
