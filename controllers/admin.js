@@ -277,7 +277,9 @@ exports.updateAlbumInfo = async (req, res) => {
     relInBangladesh,
     othersInfo,
   } = req.body;
-
+  if (!relInBangladesh) {
+    relInBangladesh = false;
+  }
   let banner_image_details = "";
   try {
     if (typeof req.files?.album_art !== "undefined") {
@@ -302,7 +304,7 @@ exports.updateAlbumInfo = async (req, res) => {
           relInBangladesh,
           othersInfo,
           album_art_id: banner_image_details?._id,
-          status: "released",
+          status: "RELEASED",
         }
       );
       const uploadedFile = await Upload.findByIdAndDelete({
