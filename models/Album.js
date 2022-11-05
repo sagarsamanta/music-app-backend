@@ -50,6 +50,7 @@ const albumSchema = mongoose.Schema({
   relInBangladesh: {
     type: Boolean,
     trim: true,
+    default: false,
   },
   othersInfo: {
     type: String,
