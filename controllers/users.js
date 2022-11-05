@@ -463,3 +463,23 @@ exports.getCreaditNotes = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+exports.changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword, userName } = req.body;
+    const findUser = await User.findOne({ userName });
+    if (!findUser) {
+      return res.status(201).send({ message: "User Not Found!" });
+    }
+    if (findUser.password !== oldPassword) {
+      return res.status(201).send({ message: "Wrong Creadentials!" });
+    }
+    await User.findByIdAndUpdate(
+      { _id: findUser._id },
+      { password: newPassword }
+    );
+    res.status(200).send({ message: "Password changes successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("server error!");
+  }
+};

@@ -57,6 +57,7 @@ router.post("/updateSongDetails", user.updateSongDetails);
 //clear all notification
 router.post("/updateBulkNotificationStatus", user.updateBulkNotificationStatus);
 router.get("/getCreaditNotes/:artist_name", user.getCreaditNotes);
+router.put("/changePassword", user.changePassword);
 
 //admin controller
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);
