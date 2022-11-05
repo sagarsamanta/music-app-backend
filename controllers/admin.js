@@ -302,9 +302,9 @@ exports.updateAlbumInfo = async (req, res) => {
           relInBangladesh,
           othersInfo,
           album_art_id: banner_image_details?._id,
+          status: "released",
         }
       );
-      console.log(album);
       const uploadedFile = await Upload.findByIdAndDelete({
         _id: album.album_art_id,
       });
