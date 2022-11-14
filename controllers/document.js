@@ -8,6 +8,44 @@ const getRecords = async (query) => {
   return data;
 };
 
+const getMonthTotalIncome = async (artist_name, year) => {
+  const total = await Doc.aggregate([
+    {
+      $match: {
+        mtoolId: artist_name,
+        year,
+      },
+    },
+    {
+      $group: {
+        _id: {
+          month: "$month",
+        },
+        total: { $sum: "$total" },
+      },
+    },
+  ]);
+  return total;
+};
+const getStoreTotalIncome = async (artist_name, year) => {
+  const total = await Doc.aggregate([
+    {
+      $match: {
+        mtoolId: artist_name,
+        year,
+      },
+    },
+    {
+      $group: {
+        _id: {
+          storeName: "$storeName",
+        },
+        total: { $sum: "$total" },
+      },
+    },
+  ]);
+  return total;
+};
 exports.addDocument = async (req, res, next) => {
   try {
     const { storeName, year, month } = req.params;
@@ -85,19 +123,30 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
           },
         },
       },
-      // {
-      //   $group: {
-      //     _id: "$_id.Month",
-      //     Data: {
-      //       $push: {
-      //         // Month: "$_id.month",
-      //         Store: "$_id.Store",
-      //         streamming: "$streamming",
-      //       },
-      //     },
-      //   },
-      // },
     ]);
+
+    const storeTotal = await getStoreTotalIncome(
+      req.params.artist_name,
+      req.params.year
+    );
+    const monthTotal = await getMonthTotalIncome(
+      req.params.artist_name,
+      req.params.year
+    );
+    let createStoreArray = {};
+    let createMonthArray = {};
+
+    storeTotal.forEach((item) => {
+      const month = item._id.storeName;
+      const sum = item.total;
+      Object.assign(createStoreArray, { [month]: sum });
+    });
+
+    monthTotal.forEach((item) => {
+      const month = item._id.month;
+      const sum = item.total;
+      Object.assign(createMonthArray, { [month]: sum });
+    });
 
     const formatData = report.map((item) => {
       value = {};
@@ -112,6 +161,8 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
     res.status(200).send({
       year: req.params.year,
       Streamming: formatData,
+      storeWiseTotal: createStoreArray,
+      monthWiseTotal: createMonthArray,
     });
   } catch (error) {
     console.log(error);
