@@ -5,7 +5,6 @@ const excelToJson = require("convert-excel-to-json");
 const Record = require("../models/Record");
 const getRecords = async (query) => {
   const data = await Doc.find(query, { _id: 0, __v: 0 });
-  console.log(query);
   return data;
 };
 
@@ -179,7 +178,7 @@ exports.getRevanueMonthStoreReportForTable = async (req, res) => {
             month: "$month",
             storeName: "$storeName",
           },
-          revanue: { $sum: "$income" },
+          revanue: { $sum: "$royalty " },
         },
       },
       {
@@ -231,7 +230,7 @@ exports.getRevanueMonthStoreReportForCharts = async (req, res) => {
           _id: {
             month: "$month",
           },
-          revanue: { $sum: "$income" },
+          revanue: { $sum: "$royalty " },
         },
       },
     ]);
@@ -247,7 +246,7 @@ exports.getRevanueMonthStoreReportForCharts = async (req, res) => {
           _id: {
             storeName: "$storeName",
           },
-          revanue: { $sum: "$income" },
+          revanue: { $sum: "$royalty " },
         },
       },
     ]);
