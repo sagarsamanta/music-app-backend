@@ -5,11 +5,11 @@ const creaditSchema = mongoose.Schema(
       type: String,
     },
 
-    expireFrom: {
+    PaymentRelease: {
       type: String,
     },
 
-    expireTo: {
+    invoiceNo: {
       type: String,
     },
     fileInfo: {

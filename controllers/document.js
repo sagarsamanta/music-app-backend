@@ -57,7 +57,7 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
     const report = await Doc.aggregate([
       {
         $match: {
-          artist_name: req.params.artist_name,
+          mtoolId: req.params.artist_name,
           year: req.params.year,
         },
       },
@@ -124,7 +124,7 @@ exports.getStreamingMonthStoreReportForCharts = async (req, res) => {
     const barChartMonthReport = await Doc.aggregate([
       {
         $match: {
-          artist_name: req.params.artist_name,
+          mtoolId: req.params.artist_name,
           year: req.params.year,
         },
       },
@@ -140,7 +140,7 @@ exports.getStreamingMonthStoreReportForCharts = async (req, res) => {
     const pieChartStoreReport = await Doc.aggregate([
       {
         $match: {
-          artist_name: req.params.artist_name,
+          mtoolId: req.params.artist_name,
           year: req.params.year,
         },
       },
@@ -168,7 +168,7 @@ exports.getRevanueMonthStoreReportForTable = async (req, res) => {
     const report = await Doc.aggregate([
       {
         $match: {
-          artist_name: req.params.artist_name,
+          mtoolId: req.params.artist_name,
           year: req.params.year,
         },
       },
@@ -222,7 +222,7 @@ exports.getRevanueMonthStoreReportForCharts = async (req, res) => {
     const barChartMonthReport = await Doc.aggregate([
       {
         $match: {
-          artist_name: req.params.artist_name,
+          mtoolId: req.params.artist_name,
           year: req.params.year,
         },
       },
@@ -238,7 +238,7 @@ exports.getRevanueMonthStoreReportForCharts = async (req, res) => {
     const pieChartStoreReport = await Doc.aggregate([
       {
         $match: {
-          artist_name: req.params.artist_name,
+          mtoolId: req.params.artist_name,
           year: req.params.year,
         },
       },
@@ -276,16 +276,21 @@ exports.getUserReports = async (req, res) => {
     const { artist_name, storeName, year, month } = req.params;
     console.log(req.params);
     if (storeName && month && year) {
-      const data = await getRecords({ artist_name, storeName, month, year });
+      const data = await getRecords({
+        mtoolId: artist_name,
+        storeName,
+        month,
+        year,
+      });
       res.status(200).send(data);
     } else if (storeName && year) {
-      const data = await getRecords({ artist_name, storeName, year });
+      const data = await getRecords({ mtoolId: artist_name, storeName, year });
       return res.status(200).send(data);
     } else if (storeName) {
-      const data = await getRecords({ artist_name, storeName });
+      const data = await getRecords({ mtoolId: artist_name, storeName });
       return res.status(200).send(data);
     } else if (year) {
-      const data = await getRecords({ artist_name, year });
+      const data = await getRecords({ mtoolId: artist_name, year });
       return res.status(200).send(data);
     }
   } catch (error) {
@@ -304,7 +309,7 @@ exports.getAllUplodedRecords = async (req, res) => {
 };
 exports.getYear = async (req, res) => {
   const { artist_name } = req.params;
-  const data = await Doc.find({artist_name:artist_name}).distinct("year");
+  const data = await Doc.find({ artist_name: artist_name }).distinct("year");
   try {
     res.status(200).send(data);
   } catch (error) {

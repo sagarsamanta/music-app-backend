@@ -325,7 +325,7 @@ exports.updateAlbumInfo = async (req, res) => {
   }
 };
 exports.createCreaditNotes = async (req, res) => {
-  const { artist_name, expireFrom, expireTo } = req.body;
+  const { artist_name, invoiceNo, PaymentRelease } = req.body;
   let creaditNotesFile = "";
   try {
     if (typeof req.files?.file !== "undefined") {
@@ -345,8 +345,8 @@ exports.createCreaditNotes = async (req, res) => {
       const newCreaditNote = new Creadit({
         artist_name,
         fileInfo: file._id,
-        expireFrom,
-        expireTo,
+        invoiceNo,
+        PaymentRelease,
         url: Location,
       });
       const creaditNote = await newCreaditNote.save();

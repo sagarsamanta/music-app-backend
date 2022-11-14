@@ -25,7 +25,7 @@ const documentSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-    artist_name: {
+    mtoolId: {
       type: String,
       trim: true,
     },
