@@ -33,7 +33,7 @@ const documentSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-    income: {
+    royalty : {
       type: Number,
       trim: true,
       default: 0,
