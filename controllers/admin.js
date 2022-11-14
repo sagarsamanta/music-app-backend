@@ -177,20 +177,7 @@ exports.updateSongInfo = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
-exports.updateAlbumDetails = async (req, res) => {
-  try {
-    const id = req.body.albumId;
-    if (!id) {
-      return res.status(201).send({ message: "Invalid Album Id" });
-    }
-    const updatedAlbum = await Album.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
-    res.status(200).send({ data: updatedAlbum });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
-};
+
 exports.countAllAlbum = async (req, res) => {
   try {
     const pendingAlbum = await Album.find({ status: "PENDING" });
@@ -371,5 +358,31 @@ exports.getAllArtistName = async (req, res) => {
     res.status(200).send(allArtist);
   } catch (error) {
     res.status(500).send("Server error");
+  }
+};
+exports.updateAlbumDetails = async (req, res) => {
+  try {
+    const albumId = req.body.albumId;
+    if (!albumId) {
+      return res.status(201).send({ message: "Invalid Album Id" });
+    }
+    const updatedAlbum = await Album.findByIdAndUpdate(
+      { _id: albumId },
+      req.body,
+      {
+        new: true,
+      }
+    );
+    const { _id, title, user_id } = updatedAlbum;
+    const data = {
+      albumId: _id,
+      albumTitle: title,
+      userId: user_id,
+      message: "Album updated to next step!",
+    };
+    const notification = await createNotification(data);
+    res.status(200).send({ data: updatedAlbum });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
   }
 };
