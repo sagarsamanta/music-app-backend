@@ -25,7 +25,15 @@ const getMonthTotalIncome = async (artist_name, year) => {
       },
     },
   ]);
-  return total;
+  let createMonthArray = {};
+  if (total.length == 0) return [];
+  total.forEach((item) => {
+    const month = item._id.month;
+    const sum = item.total;
+    Object.assign(createMonthArray, { [month]: sum });
+  });
+
+  return createMonthArray;
 };
 const getStoreTotalIncome = async (artist_name, year) => {
   const total = await Doc.aggregate([
@@ -44,7 +52,15 @@ const getStoreTotalIncome = async (artist_name, year) => {
       },
     },
   ]);
-  return total;
+  if (total.length == 0) return [];
+
+  let createStoreArray = {};
+  total.forEach((item) => {
+    const month = item._id.storeName;
+    const sum = item.total;
+    Object.assign(createStoreArray, { [month]: sum });
+  });
+  return createStoreArray;
 };
 exports.addDocument = async (req, res, next) => {
   try {
@@ -133,20 +149,6 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
       req.params.artist_name,
       req.params.year
     );
-    let createStoreArray = {};
-    let createMonthArray = {};
-
-    storeTotal.forEach((item) => {
-      const month = item._id.storeName;
-      const sum = item.total;
-      Object.assign(createStoreArray, { [month]: sum });
-    });
-
-    monthTotal.forEach((item) => {
-      const month = item._id.month;
-      const sum = item.total;
-      Object.assign(createMonthArray, { [month]: sum });
-    });
 
     const formatData = report.map((item) => {
       value = {};
@@ -161,8 +163,8 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
     res.status(200).send({
       year: req.params.year,
       Streamming: formatData,
-      storeWiseTotal: createStoreArray,
-      monthWiseTotal: createMonthArray,
+      storeWiseTotal: storeTotal,
+      monthWiseTotal: monthTotal,
     });
   } catch (error) {
     console.log(error);

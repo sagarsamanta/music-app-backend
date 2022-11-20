@@ -5,6 +5,7 @@ const { s3Remove, s3Upload } = require("../middleware/AwsS3service");
 const Upload = require("../models/Upload");
 const Creadit = require("../models/Creadit");
 const User = require("../models/Users");
+const Store = require("../models/StoreControl");
 
 //notification create handelar
 const createNotification = async (data) => {
@@ -384,5 +385,30 @@ exports.updateAlbumDetails = async (req, res) => {
     res.status(200).send({ data: updatedAlbum });
   } catch (error) {
     res.status(500).send({ message: error.message });
+  }
+};
+exports.storeAccess = async (req, res) => {
+  try {
+    const { artist_name, generalCategory, crbtCategory, bangladeshCategory } =
+      req.body;
+    const isAlredyExist = await Store.findOne({ artist_name });
+    if (isAlredyExist) {
+      const updateControl = await Store.findByIdAndUpdate(
+        { _id: isAlredyExist._id },
+        { ...req.body },
+        {
+          new: true,
+        }
+      );
+      return res
+        .status(200)
+        .send({ message: "Successfull", data: updateControl });
+    }
+    const storeAceess = new Store({ ...req.body });
+    const accessControl = await storeAceess.save();
+    res.status(200).send({ message: "Successfull", data: accessControl });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
   }
 };

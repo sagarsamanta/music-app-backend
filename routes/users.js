@@ -82,6 +82,9 @@ router.get("/countAllAlbum", admin.countAllAlbum);
 //Modify album details
 router.post("/updateAlbumInfo", album_art_upload, admin.updateAlbumInfo);
 
+//store access contarol
+router.post("/storeAccess", admin.storeAccess);
+
 //doc controllers
 
 //API for admin to upload only excel(.xlsx) file
