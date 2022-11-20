@@ -7,7 +7,7 @@ const storeSchema = mongoose.Schema({
   generalCategory: {
     type: Boolean,
     trim: true,
-    default: false,
+    default: true,
   },
   crbtCategory: {
     type: Boolean,

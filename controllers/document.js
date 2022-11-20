@@ -3,6 +3,7 @@ const Doc = require("../models/Document");
 const fs = require("fs");
 const excelToJson = require("convert-excel-to-json");
 const Record = require("../models/Record");
+const Store = require("../models/StoreControl");
 const getRecords = async (query) => {
   const data = await Doc.find(query, { _id: 0, __v: 0 });
   return data;
@@ -58,6 +59,60 @@ const getStoreTotalIncome = async (artist_name, year) => {
   total.forEach((item) => {
     const month = item._id.storeName;
     const sum = item.total;
+    Object.assign(createStoreArray, { [month]: sum });
+  });
+  return createStoreArray;
+};
+const getMonthTotalRevanue = async (artist_name, year) => {
+  const total = await Doc.aggregate([
+    {
+      $match: {
+        mtoolId: artist_name,
+        year,
+      },
+    },
+    {
+      $group: {
+        _id: {
+          month: "$month",
+        },
+        revanue: { $sum: "$royalty" },
+      },
+    },
+  ]);
+  let createMonthArray = {};
+  if (total.length == 0) return [];
+  total.forEach((item) => {
+    const month = item._id.month;
+    const sum = item.revanue;
+    Object.assign(createMonthArray, { [month]: sum });
+  });
+
+  return createMonthArray;
+};
+const getStoreTotalRevanue = async (artist_name, year) => {
+  const total = await Doc.aggregate([
+    {
+      $match: {
+        mtoolId: artist_name,
+        year,
+      },
+    },
+    {
+      $group: {
+        _id: {
+          storeName: "$storeName",
+        },
+        revanue: { $sum: "$royalty" },
+      },
+    },
+  ]);
+  if (total.length == 0) return [];
+console.log(total)
+  let createStoreArray = {};
+  total.forEach((item) => {
+    const month = item._id.storeName;
+    const sum = item.revanue;
     Object.assign(createStoreArray, { [month]: sum });
   });
   return createStoreArray;
@@ -140,7 +195,20 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
         },
       },
     ]);
-
+    const userStoreAccessContarol = await Store.findOne({
+      artist_name: req.params.artist_name,
+    });
+    let storeControl;
+    if (!userStoreAccessContarol) {
+      storeControl = {
+        generalCategory: true,
+        crbtCategory: false,
+        bangladeshCategory: false,
+        artist_name: req.params.artist_name,
+      };
+    } else {
+      storeControl = userStoreAccessContarol;
+    }
     const storeTotal = await getStoreTotalIncome(
       req.params.artist_name,
       req.params.year
@@ -160,11 +228,33 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
       });
       return value;
     });
+    sortByMonth(formatData);
+    function sortByMonth(arr) {
+      var months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "July",
+        "Aug",
+        "Sept",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      arr.sort(function (a, b) {
+        return months.indexOf(a.month) - months.indexOf(b.month);
+      });
+    }
+
     res.status(200).send({
       year: req.params.year,
       Streamming: formatData,
       storeWiseTotal: storeTotal,
       monthWiseTotal: monthTotal,
+      storeControl,
     });
   } catch (error) {
     console.log(error);
@@ -231,7 +321,8 @@ exports.getRevanueMonthStoreReportForTable = async (req, res) => {
             month: "$month",
             storeName: "$storeName",
           },
-          revanue: { $sum: "$royalty " },
+          revanue: { $sum: "$royalty" },
+          // revanue: { $sum: "$total" },
         },
       },
       {
@@ -250,6 +341,21 @@ exports.getRevanueMonthStoreReportForTable = async (req, res) => {
         },
       },
     ]);
+
+    const userStoreAccessContarol = await Store.findOne({
+      artist_name: req.params.artist_name,
+    });
+    let storeControl;
+    if (!userStoreAccessContarol) {
+      storeControl = {
+        generalCategory: true,
+        crbtCategory: false,
+        bangladeshCategory: false,
+        artist_name: req.params.artist_name,
+      };
+    } else {
+      storeControl = userStoreAccessContarol;
+    }
     const formatData = report.map((item) => {
       value = {};
       value.month = item._id.month;
@@ -260,9 +366,42 @@ exports.getRevanueMonthStoreReportForTable = async (req, res) => {
       });
       return value;
     });
+
+    sortByMonth(formatData);
+    function sortByMonth(arr) {
+      var months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "July",
+        "Aug",
+        "Sept",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      arr.sort(function (a, b) {
+        return months.indexOf(a.month) - months.indexOf(b.month);
+      });
+    }
+
+    const storeTotal = await getStoreTotalRevanue(
+      req.params.artist_name,
+      req.params.year
+    );
+    const monthTotal = await getMonthTotalRevanue(
+      req.params.artist_name,
+      req.params.year
+    );
     res.status(200).send({
       year: req.params.year,
       Revanue: formatData,
+      storeWiseTotal: storeTotal,
+      monthWiseTotal: monthTotal,
+      storeControl,
     });
   } catch (error) {
     console.log(error);
