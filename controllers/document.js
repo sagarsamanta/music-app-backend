@@ -542,7 +542,7 @@ exports.getFinancialReport = async (req, res) => {
           _id: {
             // month: "$month",
           },
-          paymentRelease: { $sum: "$PaymentRelease" },
+          paymentRelease: { $sum: "$paymentRelease" },
         },
       },
     ]);

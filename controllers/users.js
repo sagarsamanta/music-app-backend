@@ -459,7 +459,7 @@ exports.getCreaditNotes = async (req, res) => {
   try {
     const { artist_name } = req.params;
     const artistInfo = await Creadit.find({ artist_name }).select(
-      "artist_name expireFrom expireTo url createdAt -_id"
+      "artist_name expireFrom invoiceNo expireTo url createdAt -_id"
     );
     res.status(200).send({ creadit: artistInfo });
   } catch (error) {
