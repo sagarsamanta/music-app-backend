@@ -202,7 +202,7 @@ exports.addAlbumDocument = async (req, res) => {
       crbt_name,
       wav_file_url: wav_file.Location,
       wav_file_name: wav_file.Key,
-      noc_doc_url: wav_file.Location,
+      noc_doc_url: noc_doc.Location,
       noc_doc_name: noc_doc.Key,
       upload_mp3_url: upload_mp3.Location,
       upload_mp3_name: upload_mp3.Key,
@@ -250,8 +250,11 @@ exports.getSongDetais = async (req, res) => {
     if (song) {
       const album_art_id = song.album_art_id;
       const album_art = await Upload.findById(album_art_id);
-      // res.set("Content-Type", "image/jpeg");
-      res.status(200).send(album_art);
+      if (album_art) {
+        res.status(200).send(album_art);
+      } else {
+        res.status(201).send({ message: "Song details not found!" });
+      }
     } else {
       res.status(201).json({ message: "Image not found" });
     }

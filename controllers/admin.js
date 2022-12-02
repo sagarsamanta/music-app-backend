@@ -412,3 +412,15 @@ exports.storeAccess = async (req, res) => {
     res.status(500).send(error);
   }
 };
+exports.deleteAlbum = async (req, res) => {
+  try {
+    const { albumId } = req.params;
+    if (!albumId)
+      return res.status(201).send({ message: "Invalid album id!." });
+    await Album.findByIdAndDelete({ _id:albumId });
+    res.status.send({ message: "Successfull" });
+  } catch (err) {
+    console.log(err)
+    res.status(500).send(err);
+  }
+};
