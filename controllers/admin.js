@@ -417,10 +417,12 @@ exports.deleteAlbum = async (req, res) => {
     const { albumId } = req.params;
     if (!albumId)
       return res.status(201).send({ message: "Invalid album id!." });
-    await Album.findByIdAndDelete({ _id:albumId });
-    res.status.send({ message: "Successfull" });
+    await Album.findByIdAndDelete({ _id: albumId });
+    const data = await Song.deleteMany({ albumId: albumId });
+    console.log(data)
+    res.status(200).send({ message: "Successfull" });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).send(err);
   }
 };

@@ -84,6 +84,7 @@ router.post("/updateAlbumInfo", album_art_upload, admin.updateAlbumInfo);
 
 //store access contarol
 router.post("/storeAccess", admin.storeAccess);
+//delete album
 router.delete("/deleteAlbum/:albumId", admin.deleteAlbum);
 
 //doc controllers
