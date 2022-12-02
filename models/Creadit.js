@@ -5,8 +5,8 @@ const creaditSchema = mongoose.Schema(
       type: String,
     },
 
-    PaymentRelease: {
-      type: String,
+    paymentRelease: {
+      type: Number,
     },
 
     invoiceNo: {

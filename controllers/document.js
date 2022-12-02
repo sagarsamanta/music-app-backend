@@ -4,6 +4,8 @@ const fs = require("fs");
 const excelToJson = require("convert-excel-to-json");
 const Record = require("../models/Record");
 const Store = require("../models/StoreControl");
+const Album = require("../models/Album");
+const Creadit = require("../models/Creadit");
 const getRecords = async (query) => {
   const data = await Doc.find(query, { _id: 0, __v: 0 });
   return data;
@@ -108,7 +110,7 @@ const getStoreTotalRevanue = async (artist_name, year) => {
     },
   ]);
   if (total.length == 0) return [];
-console.log(total)
+  console.log(total);
   let createStoreArray = {};
   total.forEach((item) => {
     const month = item._id.storeName;
@@ -506,5 +508,62 @@ exports.getYear = async (req, res) => {
   } catch (error) {
     console.log(err);
     res.status(500).send(err);
+  }
+};
+exports.getFinancialReport = async (req, res) => {
+  try {
+    const { artist_name } = req.params;
+    const { _id } = req.user;
+    const totalEarning = await Doc.aggregate([
+      {
+        $match: {
+          mtoolId: artist_name,
+          // year: req.params.year,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            // month: "$month",
+          },
+          revanue: { $sum: "$royalty" },
+        },
+      },
+    ]);
+    const totalPaymentRealese = await Creadit.aggregate([
+      {
+        $match: {
+          artist_name: artist_name,
+          // year: req.params.year,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            // month: "$month",
+          },
+          paymentRelease: { $sum: "$PaymentRelease" },
+        },
+      },
+    ]);
+    const totalRealeasedAlbum = await Album.countDocuments({
+      user_id: _id,
+    });
+    if (totalEarning.length > 0) {
+      res.status(200).send({
+        earning: totalEarning[0]?.revanue || 0,
+        albumCount: totalRealeasedAlbum || 0,
+        paymentRelease: totalPaymentRealese[0]?.paymentRelease || 0,
+      });
+    } else {
+      res.status(200).send({
+        earning: 0,
+        albumCount: totalRealeasedAlbum,
+        paymentRelease: totalPaymentRealese[0]?.paymentRelease || 0,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server error");
   }
 };

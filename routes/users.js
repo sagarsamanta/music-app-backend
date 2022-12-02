@@ -18,6 +18,7 @@ const {
   getUserReports,
   getAllUplodedRecords,
   getYear,
+  getFinancialReport,
 } = require("../controllers/document");
 
 // user controllers
@@ -58,7 +59,7 @@ router.post("/updateSongDetails", user.updateSongDetails);
 router.post("/updateBulkNotificationStatus", user.updateBulkNotificationStatus);
 router.get("/getCreaditNotes/:artist_name", user.getCreaditNotes);
 router.put("/changePassword", user.changePassword);
-
+router.get("/getFinancialReport", authentication, getFinancialReport);
 //admin controller
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);
 router.get("/getReleasedAllAlbum", admin.getReleasedAllAlbum);
@@ -131,5 +132,7 @@ router.delete(
   "/removeUploadedExcel/:storeName/:year/:month",
   removeUploadedExcel
 );
+
+router.get("/getFinancialReport/:artist_name",authentication, getFinancialReport)
 
 module.exports = router;

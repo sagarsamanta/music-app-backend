@@ -334,7 +334,7 @@ exports.createCreaditNotes = async (req, res) => {
         artist_name,
         fileInfo: file._id,
         invoiceNo,
-        PaymentRelease,
+        paymentRelease:Number(PaymentRelease),
         url: Location,
       });
       const creaditNote = await newCreaditNote.save();
