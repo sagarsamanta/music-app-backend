@@ -422,7 +422,7 @@ exports.getRevanueMonthStoreReportForCharts = async (req, res) => {
           _id: {
             month: "$month",
           },
-          revanue: { $sum: "$royalty " },
+          revanue: { $sum: "$royalty" },
         },
       },
     ]);
@@ -438,7 +438,7 @@ exports.getRevanueMonthStoreReportForCharts = async (req, res) => {
           _id: {
             storeName: "$storeName",
           },
-          revanue: { $sum: "$royalty " },
+          revanue: { $sum: "$royalty" },
         },
       },
     ]);
