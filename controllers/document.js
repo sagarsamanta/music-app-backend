@@ -6,6 +6,7 @@ const Record = require("../models/Record");
 const Store = require("../models/StoreControl");
 const Album = require("../models/Album");
 const Creadit = require("../models/Creadit");
+const User = require("../models/Users");
 const getRecords = async (query) => {
   const data = await Doc.find(query, { _id: 0, __v: 0 });
   return data;
@@ -197,20 +198,10 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
         },
       },
     ]);
-    const userStoreAccessContarol = await Store.findOne({
-      artist_name: req.params.artist_name,
-    });
-    let storeControl;
-    if (!userStoreAccessContarol) {
-      storeControl = {
-        generalCategory: true,
-        crbtCategory: false,
-        bangladeshCategory: false,
-        artist_name: req.params.artist_name,
-      };
-    } else {
-      storeControl = userStoreAccessContarol;
-    }
+    const userStoreAccessContarol = await User.findOne({
+      userName: req.params.artist_name,
+    }).select("generalCategory crbtCategory bangladeshCategory");
+    
     const storeTotal = await getStoreTotalIncome(
       req.params.artist_name,
       req.params.year
@@ -256,7 +247,7 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
       Streamming: formatData,
       storeWiseTotal: storeTotal,
       monthWiseTotal: monthTotal,
-      storeControl,
+      storeControl:userStoreAccessContarol,
     });
   } catch (error) {
     console.log(error);
@@ -344,20 +335,10 @@ exports.getRevanueMonthStoreReportForTable = async (req, res) => {
       },
     ]);
 
-    const userStoreAccessContarol = await Store.findOne({
-      artist_name: req.params.artist_name,
-    });
-    let storeControl;
-    if (!userStoreAccessContarol) {
-      storeControl = {
-        generalCategory: true,
-        crbtCategory: false,
-        bangladeshCategory: false,
-        artist_name: req.params.artist_name,
-      };
-    } else {
-      storeControl = userStoreAccessContarol;
-    }
+    const userStoreAccessContarol = await User.findOne({
+      userName: req.params.artist_name,
+    }).select("generalCategory crbtCategory bangladeshCategory");
+
     const formatData = report.map((item) => {
       value = {};
       value.month = item._id.month;
@@ -403,7 +384,7 @@ exports.getRevanueMonthStoreReportForTable = async (req, res) => {
       Revanue: formatData,
       storeWiseTotal: storeTotal,
       monthWiseTotal: monthTotal,
-      storeControl,
+      storeControl: userStoreAccessContarol,
     });
   } catch (error) {
     console.log(error);
