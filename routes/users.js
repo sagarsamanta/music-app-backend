@@ -84,7 +84,7 @@ router.get("/countAllAlbum", admin.countAllAlbum);
 router.post("/updateAlbumInfo", album_art_upload, admin.updateAlbumInfo);
 
 //store access contarol
-router.post("/storeAccess", admin.storeAccess);
+router.post("/updateStoreAccess", admin.updateStoreAccess);
 //delete album
 router.delete("/deleteAlbum/:albumId", admin.deleteAlbum);
 router.get("/getUserProfile/:artistName", admin.getUserProfile);

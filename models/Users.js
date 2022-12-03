@@ -55,6 +55,21 @@ const userSchema = new mongoose.Schema({
     trim: true,
     required: true,
   },
+  generalCategory: {
+    type: Boolean,
+    trim: true,
+    default: true,
+  },
+  crbtCategory: {
+    type: Boolean,
+    trim: true,
+    default: false,
+  },
+  bangladeshCategory: {
+    type: Boolean,
+    trim: true,
+    default: false,
+  },
 });
 
 userSchema.methods.generateAuthToken = async function () {

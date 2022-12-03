@@ -387,26 +387,20 @@ exports.updateAlbumDetails = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
-exports.storeAccess = async (req, res) => {
+
+exports.updateStoreAccess = async (req, res) => {
   try {
-    const { artist_name, generalCategory, crbtCategory, bangladeshCategory } =
+    const { userName, generalCategory, crbtCategory, bangladeshCategory } =
       req.body;
-    const isAlredyExist = await Store.findOne({ artist_name });
-    if (isAlredyExist) {
-      const updateControl = await Store.findByIdAndUpdate(
-        { _id: isAlredyExist._id },
-        { ...req.body },
-        {
-          new: true,
-        }
+    if (userName) {
+      await User.updateOne(
+        { userName: userName },
+        { generalCategory, crbtCategory, bangladeshCategory }
       );
-      return res
-        .status(200)
-        .send({ message: "Successfull", data: updateControl });
+      return res.status(200).send({ message: "Successfull" });
+    } else {
+      return res.status(400).send({ message: "User name is required" });
     }
-    const storeAceess = new Store({ ...req.body });
-    const accessControl = await storeAceess.save();
-    res.status(200).send({ message: "Successfull", data: accessControl });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
@@ -431,10 +425,10 @@ exports.getUserProfile = async (req, res) => {
     const { artistName } = req.params;
     if (artistName) {
       const user = await User.findOne({ userName: artistName });
-      const userAlbum=await Album.find({user_id:user._id})
+      const userAlbum = await Album.find({ user_id: user._id });
       res.status(200).send({
         user,
-        albumList:userAlbum
+        albumList: userAlbum,
       });
     } else {
       res.status(400).send({
@@ -442,7 +436,7 @@ exports.getUserProfile = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).send("Server error");
   }
 };
