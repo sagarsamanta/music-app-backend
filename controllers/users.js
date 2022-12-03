@@ -1,8 +1,5 @@
 const User = require("../models/Users");
-const fs = require("fs");
-const path = require("path");
 const Notification = require("../models/Notifications");
-const { promisify } = require("util");
 const Upload = require("../models/Upload");
 const Album = require("../models/Album");
 const Song = require("../models/Song");

@@ -3,7 +3,6 @@ const Doc = require("../models/Document");
 const fs = require("fs");
 const excelToJson = require("convert-excel-to-json");
 const Record = require("../models/Record");
-const Store = require("../models/StoreControl");
 const Album = require("../models/Album");
 const Creadit = require("../models/Creadit");
 const User = require("../models/Users");
