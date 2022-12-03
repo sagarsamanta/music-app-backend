@@ -334,7 +334,7 @@ exports.createCreaditNotes = async (req, res) => {
         artist_name,
         fileInfo: file._id,
         invoiceNo,
-        paymentRelease:Number(PaymentRelease),
+        paymentRelease: Number(PaymentRelease),
         url: Location,
       });
       const creaditNote = await newCreaditNote.save();
@@ -419,10 +419,30 @@ exports.deleteAlbum = async (req, res) => {
       return res.status(201).send({ message: "Invalid album id!." });
     await Album.findByIdAndDelete({ _id: albumId });
     const data = await Song.deleteMany({ albumId: albumId });
-    console.log(data)
+    console.log(data);
     res.status(200).send({ message: "Successfull" });
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
+  }
+};
+exports.getUserProfile = async (req, res) => {
+  try {
+    const { artistName } = req.params;
+    if (artistName) {
+      const user = await User.findOne({ userName: artistName });
+      const userAlbum=await Album.find({user_id:user._id})
+      res.status(200).send({
+        user,
+        albumList:userAlbum
+      });
+    } else {
+      res.status(400).send({
+        message: "User name is required",
+      });
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).send("Server error");
   }
 };

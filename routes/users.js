@@ -87,6 +87,7 @@ router.post("/updateAlbumInfo", album_art_upload, admin.updateAlbumInfo);
 router.post("/storeAccess", admin.storeAccess);
 //delete album
 router.delete("/deleteAlbum/:albumId", admin.deleteAlbum);
+router.get("/getUserProfile/:artistName", admin.getUserProfile);
 
 //doc controllers
 
@@ -133,6 +134,10 @@ router.delete(
   removeUploadedExcel
 );
 
-router.get("/getFinancialReport/:artist_name",authentication, getFinancialReport)
+router.get(
+  "/getFinancialReport/:artist_name",
+  authentication,
+  getFinancialReport
+);
 
 module.exports = router;
