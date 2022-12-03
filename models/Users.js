@@ -87,7 +87,7 @@ userSchema.statics.findByCredential = async (userName, password) => {
   const user = await User.findOne({
     userName: userName,
     password: password,
-  });
+  }).select("-password");
   if (!user) {
     throw new Error("Unable to login!");
   }
