@@ -43,6 +43,10 @@ const albumSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
+  isrc: {
+    type: String,
+    trim: true,
+  },
   trackDuration: {
     type: String,
     trim: true,

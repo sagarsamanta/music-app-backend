@@ -255,11 +255,12 @@ exports.sendAnyNotification = async (req, res) => {
   const { userId, message } = req.body;
 };
 exports.updateAlbumInfo = async (req, res) => {
-  const {
+  let {
     albumId,
     label,
     catalogNo,
     upc,
+    isrc,
     trackDuration,
     relInBangladesh,
     othersInfo,
@@ -272,7 +273,6 @@ exports.updateAlbumInfo = async (req, res) => {
     if (typeof req.files?.album_art !== "undefined") {
       const { Location, Key, Bucket } = await s3Upload(req.files.album_art[0]);
       const { originalname, mimetype } = req.files?.album_art[0];
-
       //store album image to database
       const banner = new Upload({
         originalName: originalname,
@@ -287,6 +287,7 @@ exports.updateAlbumInfo = async (req, res) => {
           label,
           catalogNo,
           upc,
+          isrc,
           trackDuration,
           relInBangladesh,
           othersInfo,
@@ -297,8 +298,8 @@ exports.updateAlbumInfo = async (req, res) => {
       const uploadedFile = await Upload.findByIdAndDelete({
         _id: album.album_art_id,
       });
-      const key = uploadedFile.hashFileName;
-      await s3Remove(Key);
+      const oldUrl = uploadedFile.hashFileName;
+      await s3Remove(oldUrl);
       res.status(200).send({
         message: "SUCCESSFULL",
       });
