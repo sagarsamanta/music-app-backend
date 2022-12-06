@@ -1,3 +1,4 @@
+const { s3Upload, s3Remove } = require("../middleware/AwsS3service");
 const Post = require("../models/Post");
 const Upload = require("../models/Upload");
 
@@ -20,14 +21,17 @@ exports.createNewPost = async (req, res) => {
       let newPost = "";
       const isAnyPostExist = await Post.find();
       if (isAnyPostExist.length > 0) {
+        //get post id for update the post
         const id = isAnyPostExist[0]._id;
-        const { uploadId, url } = isAnyPostExist[0];
+        //get uploadId for delte details from upload table
+        const { uploadId} = isAnyPostExist[0];
         //remove file from upload table
+        const findUploadDetails = await Upload.findOne({ _id: uploadId });
         await Upload.deleteOne({ uploadId });
 
         //remove file from s3 bucket
-        await s3Remove(url);
-
+        const isDeleted = await s3Remove(findUploadDetails.hashFileName);
+        //update post
         newPost = await Post.findByIdAndUpdate(
           { _id: id },
           {
@@ -41,15 +45,16 @@ exports.createNewPost = async (req, res) => {
           }
         );
       } else {
-        newPost = new Post({
+        const myPost = new Post({
           link,
           caption,
           url: postDetails?._id,
+          uploadId: postDetails._id,
         });
-        const albumDetails = await newPost.save();
+        newPost = await myPost.save();
       }
 
-      if (newAlbum) {
+      if (newPost) {
         res.status(200).send({
           message: "SUCCESSFULL",
           post: newPost,

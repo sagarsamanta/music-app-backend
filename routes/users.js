@@ -60,6 +60,12 @@ router.post("/updateBulkNotificationStatus", user.updateBulkNotificationStatus);
 router.get("/getCreaditNotes/:artist_name", user.getCreaditNotes);
 router.put("/changePassword", user.changePassword);
 router.get("/getFinancialReport", authentication, getFinancialReport);
+router.get("/getCurrentAdminPost",user.getCurrentAdminPost)
+router.post("/updateNotificationStatus",user.updateNotificationStatus)
+
+
+
+
 //admin controller
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);
 router.get("/getReleasedAllAlbum", admin.getReleasedAllAlbum);

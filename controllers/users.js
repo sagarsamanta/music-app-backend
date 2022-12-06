@@ -5,6 +5,7 @@ const Album = require("../models/Album");
 const Song = require("../models/Song");
 const { s3Upload } = require("../middleware/AwsS3service");
 const Creadit = require("../models/Creadit");
+const Post = require("../models/Post");
 
 const updateNoticationStatus = async (id, status, verified) => {
   const updatedNotification = await Notification.findByIdAndUpdate(
@@ -305,7 +306,6 @@ exports.getAlbumSongCurrectionNotification = async (req, res) => {
       const sorted = getAllNotification.sort((a, b) => {
         const aDate = new Date(a.date + " " + a.time);
         const bDate = new Date(b.date + " " + b.time);
-        console.log(aDate, bDate);
         return bDate.getTime() - aDate.getTime();
       });
       res.status(200).send({
@@ -325,12 +325,11 @@ exports.getAllNotification = async (req, res) => {
     } else {
       const getAllNotification = await Notification.find({
         userId,
-        status: "UNSEEN",
+        // status: "UNSEEN",
       });
       const sorted = getAllNotification.sort((a, b) => {
         const aDate = new Date(a.date + " " + a.time);
         const bDate = new Date(b.date + " " + b.time);
-        console.log(aDate, bDate);
         return bDate.getTime() - aDate.getTime();
       });
       res.status(200).send({
@@ -481,5 +480,36 @@ exports.changePassword = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send("server error!");
+  }
+};
+exports.getCurrentAdminPost = async (req, res) => {
+  try {
+    const findPost = await Post.findOne();
+    if (findPost) {
+      res.status(200).send({
+        message: "Success",
+        post: findPost,
+      });
+    } else {
+      res.status(201).send({
+        message: "No post found",
+      });
+    }
+  } catch (err) {
+    res.status(500).send("Server error");
+  }
+};
+exports.updateNotificationStatus = async (req, res) => {
+  try {
+    const notificationIds = req.body.notificationIds;
+    notificationIds.forEach(async (id) => {
+      await Notification.findByIdAndUpdate({ _id: id }, { status: "SEEN" });
+    });
+    res.status(200).send({
+      message: "success",
+    });
+  } catch (err) {
+    console.log(err)
+    res.status(500).send("Server error");
   }
 };

@@ -12,6 +12,10 @@ const postSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
+  uploadId: {
+    type: String,
+    trim: true,
+  },
 });
 
 const Post = mongoose.model("Post", postSchema);
