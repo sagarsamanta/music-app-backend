@@ -51,7 +51,7 @@ let monthlyStoreDocUpload = multer({ storage: monthlyExcelStore }).single(
   "file"
 );
 
-//
+//creadit note upload
 const creaditNotesStorage = multer.memoryStorage();
 const creaditNoteUpload = multer({
   storage: creaditNotesStorage,
@@ -63,9 +63,22 @@ const creaditNoteUpload = multer({
   },
 }).fields([{ name: "file", maxCount: 1 }]);
 
+//crate any public post
+const postStorage = multer.memoryStorage();
+const postUpload = multer({
+  storage: postStorage,
+  limits: {
+    fileSize: 20000000, // 10000000 Bytes = 10 MB
+  },
+  fileFilter(req, file, cb) {
+    cb(undefined, true);
+  },
+}).fields([{ name: "image", maxCount: 1 }]);
+
 module.exports = {
   album_doc_upload,
   album_art_upload,
   monthlyStoreDocUpload,
   creaditNoteUpload,
+  postUpload,
 };

@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const path = require("path");
 const multer = require("multer");
+const postRoute = require("./routes/post");
 require("dotenv").config();
 app.use(express.static(__dirname + "/public"));
 app.use(express.json({ extended: false }));
@@ -29,6 +30,7 @@ mongoose
   });
 
 app.use("/api/user", require("./routes/users"));
+app.use("/api/post", postRoute);
 
 //error handelar
 app.use((error, req, res, next) => {

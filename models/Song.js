@@ -12,6 +12,14 @@ const songSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
+  isrc: {
+    type: String,
+    trim: true,
+  },
+  trackDuration: {
+    type: String,
+    trim: true,
+  },
   song_desc: {
     type: String,
     trim: true,

@@ -68,7 +68,7 @@ exports.getSuccessAllAlbum = async (req, res) => {
     const allAlbum = await Album.find({ status: "SUCCESS" }).populate(
       "user_id",
       "-_id userName client_type"
-    );
+    ).populate("all_song","_id song_title");
     if (allAlbum.length <= 0) {
       res.status(201).send({ message: "No Album found", album: allAlbum });
     } else {
@@ -260,8 +260,7 @@ exports.updateAlbumInfo = async (req, res) => {
     label,
     catalogNo,
     upc,
-    isrc,
-    trackDuration,
+
     relInBangladesh,
     othersInfo,
   } = req.body;
@@ -287,8 +286,7 @@ exports.updateAlbumInfo = async (req, res) => {
           label,
           catalogNo,
           upc,
-          isrc,
-          trackDuration,
+
           relInBangladesh,
           othersInfo,
           album_art_id: banner_image_details?._id,
