@@ -5,13 +5,14 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const path = require("path");
 const multer = require("multer");
+const cors = require('cors')
 const postRoute = require("./routes/post");
 require("dotenv").config();
 app.use(express.static(__dirname + "/public"));
 app.use(express.json({ extended: false }));
 app.use(cors());
 app.use(morgan("combined"));
-
+app.use(cors())
 // databse url
 const DV = process.env.MONGO_URL;
 // used port
