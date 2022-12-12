@@ -76,6 +76,7 @@ router.post("/updateAlbumStatus", admin.updateAlbumStatus);
 router.post("/getAllSongs", admin.getAllSongs);
 router.post("/removeFile", admin.removeFile);
 router.post("/updateSongInfo", admin.updateSongInfo);
+router.post("/updateAlbumInfoWithOutStatus", admin.updateAlbumInfoWithOutStatus);
 router.post("/updateAlbumDetails", admin.updateAlbumDetails);
 router.post("/createCreaditNotes", creaditNoteUpload, admin.createCreaditNotes);
 router.get("/getAllArtistName", admin.getAllArtistName);
