@@ -323,6 +323,8 @@ exports.updateAlbumInfoWithOutStatus = async (req, res) => {
     relInBangladesh = false;
   }
   let banner_image_details = "";
+  console.log(req.files)
+
   try {
     if (typeof req.files?.album_art !== "undefined") {
       const { Location, Key, Bucket } = await s3Upload(req.files.album_art[0]);
