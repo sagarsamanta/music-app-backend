@@ -200,7 +200,7 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
     const userStoreAccessContarol = await User.findOne({
       userName: req.params.artist_name,
     }).select("generalCategory crbtCategory bangladeshCategory");
-    
+
     const storeTotal = await getStoreTotalIncome(
       req.params.artist_name,
       req.params.year
@@ -246,7 +246,7 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
       Streamming: formatData,
       storeWiseTotal: storeTotal,
       monthWiseTotal: monthTotal,
-      storeControl:userStoreAccessContarol,
+      storeControl: userStoreAccessContarol,
     });
   } catch (error) {
     console.log(error);
@@ -483,8 +483,11 @@ exports.getAllUplodedRecords = async (req, res) => {
 exports.getYear = async (req, res) => {
   const { artist_name } = req.params;
   const data = await Doc.find({ artist_name: artist_name }).distinct("year");
+  let formatedArray = [...data];
   try {
-    res.status(200).send(data);
+    res.status(200).send({
+      data: formatedArray,
+    });
   } catch (error) {
     console.log(err);
     res.status(500).send(err);
