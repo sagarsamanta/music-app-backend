@@ -29,7 +29,7 @@ mongoose
     console.log(err);
   });
 app.use("/", (req, res) => {
-  res.status(200).send("Server running");
+  res.status(200).send("Server running with changes");
 });
 app.use("/api/user", require("./routes/users"));
 app.use("/api/post", postRoute);
