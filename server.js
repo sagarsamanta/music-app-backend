@@ -28,12 +28,12 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+app.use("/api/user", require("./routes/users"));
+app.use("/api/post", postRoute);
 app.use("/", (req, res) => {
   res.status(200).send("Server running with changes");
 });
-app.use("/api/user", require("./routes/users"));
-app.use("/api/post", postRoute);
-
 //error handelar
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
