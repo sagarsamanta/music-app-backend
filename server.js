@@ -28,7 +28,9 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
+app.use("/", (req, res) => {
+  res.status(200).send("Server running");
+});
 app.use("/api/user", require("./routes/users"));
 app.use("/api/post", postRoute);
 
