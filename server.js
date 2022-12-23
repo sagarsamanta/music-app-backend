@@ -32,7 +32,7 @@ mongoose
 app.use("/api/user", require("./routes/users"));
 app.use("/api/post", postRoute);
 app.use("/", (req, res) => {
-  res.status(200).send("Server running with changes");
+  res.status(200).send("Server running test with changes");
 });
 //error handelar
 app.use((error, req, res, next) => {
