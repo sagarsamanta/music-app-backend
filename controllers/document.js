@@ -28,15 +28,29 @@ const getMonthTotalIncome = async (artist_name, year) => {
       },
     },
   ]);
-  let createMonthArray = {};
-  if (total.length == 0) return [];
-  total.forEach((item) => {
-    const month = item._id.month;
-    const sum = item.total;
-    Object.assign(createMonthArray, { [month]: sum });
-  });
 
-  return createMonthArray;
+  let months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "July",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  var output = total.sort(function (a, b) {
+    return (
+      months.indexOf(a?._id?.month.substr(0, 3)) -
+      months.indexOf(b?._id?.month.substr(0, 3))
+    );
+  });
+  const getOnlyValue = output.map((v) => v.total);
+  return getOnlyValue;
 };
 const getStoreTotalIncome = async (artist_name, year) => {
   const total = await Doc.aggregate([
@@ -82,15 +96,28 @@ const getMonthTotalRevanue = async (artist_name, year) => {
       },
     },
   ]);
-  let createMonthArray = {};
-  if (total.length == 0) return [];
-  total.forEach((item) => {
-    const month = item._id.month;
-    const sum = item.revanue;
-    Object.assign(createMonthArray, { [month]: sum });
+  let months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "July",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  var output = total.sort(function (a, b) {
+    return (
+      months.indexOf(a?._id?.month.substr(0, 3)) -
+      months.indexOf(b?._id?.month.substr(0, 3))
+    );
   });
-
-  return createMonthArray;
+  const getOnlyValue = output.map((v) => v.revanue);
+  return getOnlyValue;
 };
 const getStoreTotalRevanue = async (artist_name, year) => {
   const total = await Doc.aggregate([
@@ -221,8 +248,10 @@ exports.getStreaminMonthStoreReportForTable = async (req, res) => {
       return value;
     });
     sortByMonth(formatData);
+    // sortByMonth(monthTotal);
+
     function sortByMonth(arr) {
-      var months = [
+      let months = [
         "Jan",
         "Feb",
         "Mar",
