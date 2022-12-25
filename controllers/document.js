@@ -155,9 +155,10 @@ exports.addDocument = async (req, res, next) => {
       return res.status(201).send({ message: "Record Alredy Exist!" });
     const newRecord = new Record(req.params);
     await newRecord.save();
-    monthlyStoreDocUpload(req, res, function (err) {
+    await monthlyStoreDocUpload(req, res, function (err) {
+      console.log(req.file);
       const result = excelToJson({
-        sourceFile: `public/${req.file.filename}`,
+        sourceFile: `public/${req.file?.filename}`,
         columnToKey: {
           "*": "{{columnHeader}}",
         },

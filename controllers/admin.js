@@ -497,7 +497,7 @@ exports.getUserProfile = async (req, res) => {
 exports.updateAlbumStatus = async (req, res) => {
   try {
     const updatedAlbum = await Album.findByIdAndUpdate(
-      { _id: req.params.albumId },
+      { _id: req.params?.albumId },
       { status: "RELEASED" },
       { new: true }
     );
