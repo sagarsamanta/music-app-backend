@@ -156,7 +156,10 @@ exports.addDocument = async (req, res, next) => {
     const newRecord = new Record(req.params);
     await newRecord.save();
     await monthlyStoreDocUpload(req, res, function (err) {
-      console.log("my file",req.file);
+      if (err) {
+        console.log("err", err);
+      }
+      console.log("my file", req.file);
       const result = excelToJson({
         sourceFile: `public/${req.file?.filename}`,
         columnToKey: {
