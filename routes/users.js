@@ -70,7 +70,7 @@ router.get("/getSuccessAllAlbum", admin.getSuccessAllAlbum);
 router.get("/getCancelAllAlbum", admin.getCancelAllAlbum);
 router.get("/getUnderVerificationAllAlbum", admin.getUnderVerificationAllAlbum);
 router.post("/updateAlbumStatus", admin.updateAlbumStatus);
-router.post("/updateAlbumStatusToRelsesed", admin.updateAlbumStatusToRelsesed);
+router.post("/updateAlbumStatusToRelsesed/:albumId", admin.updateAlbumStatusToRelsesed);
 router.post("/getAllSongs", admin.getAllSongs);
 router.post("/removeFile", admin.removeFile);
 router.post("/updateSongInfo", admin.updateSongInfo);
