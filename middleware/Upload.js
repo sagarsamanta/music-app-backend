@@ -42,7 +42,9 @@ const monthlyExcelStore = multer.diskStorage({
   destination: function (req, file, callback) {
     callback(null, "public");
   },
+  
   filename: function (req, file, cb) {
+    console.log("multer",file)
     const { originalname } = file;
     cb(null, `${newId}-${originalname}`);
   },
