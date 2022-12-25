@@ -92,30 +92,7 @@ exports.getCancelAllAlbum = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
-exports.updateAlbumStatus = async (req, res) => {
-  try {
-    let { albumId, status, message } = req.body;
-    if (!status) status = "PENDING";
-    const album = await Album.find({ _id: albumId });
-    if (album.length == 0) {
-      res.status(201).send({ message: "No Album found" });
-    } else {
-      album[0].status = status?.toUpperCase();
-      const updatedAlbum = await album[0].save();
-      const albumTitle = updatedAlbum.title;
-      const userId = updatedAlbum.user_id;
-      //create notification
-      const data = { albumId, albumTitle, userId, message };
-      const notification = await createNotification(data);
-      res.status(200).send({
-        message: "Sucessfully Updated",
-        notification,
-      });
-    }
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
-};
+
 exports.getAllSongs = async (req, res) => {
   try {
     const { albumId } = req.body;
@@ -494,7 +471,7 @@ exports.getUserProfile = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-exports.updateAlbumStatus = async (req, res) => {
+exports.updateAlbumStatusToRelsesed = async (req, res) => {
   try {
     const updatedAlbum = await Album.findByIdAndUpdate(
       { _id: req.params?.albumId },
@@ -507,5 +484,29 @@ exports.updateAlbumStatus = async (req, res) => {
     });
   } catch (err) {
     res.status(500).send("server error");
+  }
+};
+exports.updateAlbumStatus = async (req, res) => {
+  try {
+    let { albumId, status, message } = req.body;
+    if (!status) status = "PENDING";
+    const album = await Album.find({ _id: albumId });
+    if (album.length == 0) {
+      res.status(201).send({ message: "No Album found" });
+    } else {
+      album[0].status = status?.toUpperCase();
+      const updatedAlbum = await album[0].save();
+      const albumTitle = updatedAlbum.title;
+      const userId = updatedAlbum.user_id;
+      //create notification
+      const data = { albumId, albumTitle, userId, message };
+      const notification = await createNotification(data);
+      res.status(200).send({
+        message: "Sucessfully Updated",
+        notification,
+      });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
   }
 };

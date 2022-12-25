@@ -60,11 +60,8 @@ router.post("/updateBulkNotificationStatus", user.updateBulkNotificationStatus);
 router.get("/getCreaditNotes/:artist_name", user.getCreaditNotes);
 router.put("/changePassword", user.changePassword);
 router.get("/getFinancialReport", authentication, getFinancialReport);
-router.get("/getCurrentAdminPost",user.getCurrentAdminPost)
-router.post("/updateNotificationStatus",user.updateNotificationStatus)
-
-
-
+router.get("/getCurrentAdminPost", user.getCurrentAdminPost);
+router.post("/updateNotificationStatus", user.updateNotificationStatus);
 
 //admin controller
 router.get("/getPendingAllAlbum", admin.getPendingAllAlbum);
@@ -73,10 +70,15 @@ router.get("/getSuccessAllAlbum", admin.getSuccessAllAlbum);
 router.get("/getCancelAllAlbum", admin.getCancelAllAlbum);
 router.get("/getUnderVerificationAllAlbum", admin.getUnderVerificationAllAlbum);
 router.post("/updateAlbumStatus", admin.updateAlbumStatus);
+router.post("/updateAlbumStatusToRelsesed", admin.updateAlbumStatusToRelsesed);
 router.post("/getAllSongs", admin.getAllSongs);
 router.post("/removeFile", admin.removeFile);
 router.post("/updateSongInfo", admin.updateSongInfo);
-router.post("/updateAlbumInfoWithOutStatus",album_art_upload, admin.updateAlbumInfoWithOutStatus);
+router.post(
+  "/updateAlbumInfoWithOutStatus",
+  album_art_upload,
+  admin.updateAlbumInfoWithOutStatus
+);
 router.post("/updateAlbumDetails", admin.updateAlbumDetails);
 router.post("/createCreaditNotes", creaditNoteUpload, admin.createCreaditNotes);
 router.get("/getAllArtistName", admin.getAllArtistName);
