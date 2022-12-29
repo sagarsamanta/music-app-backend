@@ -134,6 +134,7 @@ exports.createAlbum = async (req, res) => {
       });
       const albumDetails = await newAlbum.save();
       if (newAlbum) {
+        res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
         res.status(200).send({
           message: "SUCCESSFULL",
           albumId: albumDetails?._id,
@@ -220,6 +221,7 @@ exports.addAlbumDocument = async (req, res) => {
       }
     );
     if (newSong) {
+      res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
       res
         .status(200)
         .send({ message: "SUCCESSFULL", songDetails: songDetails });
@@ -509,7 +511,7 @@ exports.updateNotificationStatus = async (req, res) => {
       message: "success",
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).send("Server error");
   }
 };

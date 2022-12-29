@@ -9,7 +9,7 @@ const postRoute = require("./routes/post");
 require("dotenv").config();
 app.use(express.static(__dirname + "/public"));
 app.use(express.json({ extended: false }));
-app.use(cors());
+app.use(cors({ credentials: true }))
 app.use(morgan("combined"));
 
 // databse url

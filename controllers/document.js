@@ -159,7 +159,6 @@ exports.addDocument = async (req, res, next) => {
       if (err) {
         console.log("err", err);
       }
-      console.log("my file", req.file);
       const result = excelToJson({
         sourceFile: `public/${req.file?.filename}`,
         columnToKey: {
@@ -169,7 +168,7 @@ exports.addDocument = async (req, res, next) => {
           rows: 1,
         },
       });
-      if (result.Sheet1.length > 0) {
+      if (result?.Sheet1?.length > 0) {
         const updatedRecord = result.Sheet1.map((record) => {
           //   const fiterArtistName=record.artist_name.split(",")[0]
           return { storeName, year, month, ...record };
