@@ -135,6 +135,12 @@ exports.createAlbum = async (req, res) => {
       const albumDetails = await newAlbum.save();
       if (newAlbum) {
         res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+        res.header(
+          "Access-Control-Allow-Headers",
+          "Origin, X-Requested-With, Content-Type,  Accept, x-client-key, x-client-token, x-client-secret, Authorization"
+        );
         res.status(200).send({
           message: "SUCCESSFULL",
           albumId: albumDetails?._id,
@@ -222,6 +228,13 @@ exports.addAlbumDocument = async (req, res) => {
     );
     if (newSong) {
       res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+
+      res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, x-client-key, x-client-token, x-client-secret, Authorization"
+      );
       res
         .status(200)
         .send({ message: "SUCCESSFULL", songDetails: songDetails });
