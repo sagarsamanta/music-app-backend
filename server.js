@@ -7,12 +7,7 @@ const path = require("path");
 const multer = require("multer");
 const postRoute = require("./routes/post");
 require("dotenv").config();
-app.use(
-  cors({
-    origin: "https://mtool.bengalpictures.com",
-    // methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
+
 app.use(express.static(__dirname + "/public"));
 app.use(express.json({ extended: false }));
 

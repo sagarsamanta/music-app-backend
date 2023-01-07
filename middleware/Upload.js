@@ -6,7 +6,7 @@ const songDetailsStorage = multer.memoryStorage();
 const album_doc_upload = multer({
   storage: songDetailsStorage,
   limits: {
-    fileSize: 3e8, // 10000000 Bytes = 10 MB
+    fileSize: 3e8, // 300MB
   },
 }).fields([
   { name: "wav_file", maxCount: 1 },
@@ -20,7 +20,7 @@ const albumArtStorage = multer.memoryStorage();
 const album_art_upload = multer({
   storage: albumArtStorage,
   limits: {
-    fileSize: 20000000, // 10000000 Bytes = 10 MB
+    fileSize: 2e7, //  20 MB
   },
   fileFilter(req, file, cb) {
     // upload only mp4 and mkv format
@@ -42,9 +42,9 @@ const monthlyExcelStore = multer.diskStorage({
   destination: function (req, file, callback) {
     callback(null, "public");
   },
-  
+
   filename: function (req, file, cb) {
-    console.log("multer",file)
+    console.log("multer", file);
     const { originalname } = file;
     cb(null, `${newId}-${originalname}`);
   },
